@@ -1,0 +1,16 @@
+{
+  "name": "golden-bear",
+  "version": "1.0.0",
+  "main": "process-data.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Courtney Simonse, ArtemisMAPs LLC",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@turf/turf": "^7.0.0",
+    "d3": "^7.9.0"
+  },
+  "type": "module"
+}
