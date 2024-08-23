@@ -69,9 +69,9 @@ map.on('load', () => {
         'source': 'trips',
         'type': 'line',
         'paint': {
-            'line-color': '#0d1d6b',
-            'line-opacity': 0.5,
-            'line-width': 0.5
+            'line-color': '#4a54ad',
+            'line-opacity': 0.6,
+            'line-width': 0.7
         },
         'layout': {
 
@@ -97,7 +97,7 @@ map.on('load', () => {
                 20
             ],
             'circle-opacity': 0.5,
-            'circle-color': '#2c0d6b'
+            'circle-color': '#2f313d'
         }
     })
 
@@ -117,7 +117,9 @@ map.on('load', () => {
 
     map.on('mouseenter', 'trips', (e) => {
         map.getCanvas().style.cursor = 'pointer';
-        popup.setHTML(e.features[0].properties['year'])
+        let popupHtml = '';
+        e.features.forEach(feature => popupHtml += feature.properties['year'] + ', ')
+        popup.setHTML(popupHtml)
             .setLngLat(e.lngLat)
             .addTo(map);
     });
