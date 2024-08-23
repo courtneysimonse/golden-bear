@@ -2,13 +2,6 @@ import 'https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.js';
 import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7/+esm';
 import * as turf from 'https://cdn.jsdelivr.net/npm/@turf/turf@7.0.0/+esm';
 
-const map = new maplibregl.Map({
-    container: 'map', // container id
-    style: 'https://tiles.stadiamaps.com/styles/alidade_smooth.json', // style URL
-    center: [-180, 12], // starting position [lng, lat]
-    zoom: 2 // starting zoom
-});
-
 const tripsJson = await d3.json('./data/tripLineStrings_split.geojson');
 
 const portsFeatures = await d3.csv('https://docs.google.com/spreadsheets/d/1n-2Kw8lt628JVir1urXYlBJ8wKA38A_jrL5reco9xBU/gviz/tq?tqx=out:csv&sheet=Ports%20Geocoded', (d) => {
@@ -19,6 +12,13 @@ const portsFeatures = await d3.csv('https://docs.google.com/spreadsheets/d/1n-2K
     });
 });
 
+
+const map = new maplibregl.Map({
+    container: 'map', // container id
+    style: 'https://tiles.stadiamaps.com/styles/alidade_smooth.json', // style URL
+    center: [-180, 12], // starting position [lng, lat]
+    zoom: 2 // starting zoom
+});
 
 map.on('load', () => {
 
