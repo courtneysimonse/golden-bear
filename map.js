@@ -137,6 +137,22 @@ map.on('load', () => {
         map.getCanvas().style.cursor = '';
     });
 
+    const detailPopup = new maplibregl.Popup({closeOnClick: false});
+
+    map.on('click', 'ports', (e) => {
+        let popupHtml = '';
+        const city = e.features[0].properties['city'];
+        const frequency = e.features[0].properties['count']
+
+        popupHtml = `<h3>${city}</h3>
+            </p>Number of Visits: ${frequency}</p>`;
+
+        detailPopup.setHTML(popupHtml)
+            .setLngLat(e.lngLat)
+            .addTo(map);
+
+    })
+
     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
     [...checkboxes].forEach(check => {
         check.addEventListener('change', (e) => {
@@ -211,7 +227,7 @@ map.on('load', () => {
         const shipFiltered = tripsJson.features.filter(t => filters["ship"].values.includes(t.properties["ship"]));
         const numFiltered = shipFiltered.length;
     
-        if (numFiltered < 20) {
+        if (numFiltered < 50) {
             let bounds = new maplibregl.LngLatBounds();
     
             shipFiltered.forEach(s => {

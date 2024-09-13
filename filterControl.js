@@ -18,9 +18,9 @@ class filterControl {
         this._container = document.createElement('div');
         this._container.classList = 'maplibregl-ctrl data-filters';
 
-        const header = document.createElement('h4');
-        header.textContent = 'Filters';
-        this._container.appendChild(header);
+        // const header = document.createElement('h4');
+        // header.textContent = 'Filters';
+        // this._container.appendChild(header);
 
         // const helpBtn = document.createElement('button');
         // helpBtn.dataset.bsContainer = "body";
