@@ -1,6 +1,7 @@
 import 'https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.js';
 import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7/+esm';
 import * as turf from 'https://cdn.jsdelivr.net/npm/@turf/turf@7.0.0/+esm';
+import filterControl from "./filterControl.js";
 
 const tripsJson = await d3.json('./data/tripLineStrings_split.geojson');
 
@@ -99,7 +100,15 @@ map.on('load', () => {
             'circle-opacity': 0.5,
             'circle-color': '#2f313d'
         }
-    })
+    });
+
+    let categories = ["year", "ship"];
+
+    const filterEl = new filterControl({categories: categories, data: tripsJson.features});
+    const filters = filterEl.startingFilters();
+
+
+    map.addControl(filterEl, 'top-right');
 
     const popup = new maplibregl.Popup();
 
@@ -126,5 +135,111 @@ map.on('load', () => {
 
     map.on('mouseleave', 'trips', () => {
         map.getCanvas().style.cursor = '';
+    });
+
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    [...checkboxes].forEach(check => {
+        check.addEventListener('change', (e) => {
+
+            if (e.target.className == 'image-filter') {
+                let cat = e.target.parentNode.parentNode.parentNode.dataset.filter;
+                let item = e.target.nextSibling.textContent;
+
+                if (e.target.checked == false) {
+                    filters[cat].values = filters[cat].values.filter(x => x != item);
+
+                    if (item == "Unknown") {
+                        filters[cat].values = filters[cat].values.filter(x => x != '');
+                    }
+                } else if (!filters[cat].values.includes(item)) {
+                    filters[cat].values.push(item);
+                    if (item == "Unknown") {
+                        filters[cat].values.push('');
+                    }
+                } 
+                
+            } else if (e.target.dataset.category) {
+                
+                let category = e.target.dataset.category;
+
+                if (e.target.checked == false) {
+                    filters[category].status = "off";
+                } else {
+                    filters[category].status = "on"
+                    const listInputs = document.querySelectorAll('.image-filter');
+                    listInputs.forEach(input => {
+
+                        let item = input.nextSibling.textContent;
+                        if (input.parentNode.parentNode.parentNode.dataset.filter == category && input.checked) {
+
+                            filters[category].values.push(item);
+                            if (item == "Unknown") {
+                                filters[category].values.push('');
+                            }
+
+                        }
+                    });
+                }
+
+                
+            }
+
+            updateMarkers();
+
+            setNewView();
+
+        })
     })
+
+    function updateMarkers() {
+        // filter images
+        
+        let filterExp = ["all"];
+        for (const c in filters) {
+    
+            if (Object.hasOwnProperty.call(filters, c) && filters[c].status == "on") {
+    
+                filterExp.push(getTagsFilter(filters[c].values, c))
+            }
+        }
+    
+        map.setFilter('trips', filterExp);
+    }
+
+    function setNewView() {
+        // count number of features after filter
+        const shipFiltered = tripsJson.features.filter(t => filters["ship"].values.includes(t.properties["ship"]));
+        const numFiltered = shipFiltered.length;
+    
+        if (numFiltered < 20) {
+            let bounds = new maplibregl.LngLatBounds();
+    
+            shipFiltered.forEach(s => {
+                if (s.geometry.coordinates[0].length > 1) {
+                    s.geometry.coordinates.forEach(l => {
+                        if (l.length > 1) {
+                            l.forEach(c => bounds.extend(c))
+                        }
+                    })
+                }
+            })
+
+            map.fitBounds(bounds, {padding: 25})
+        }
+    }
 })
+
+
+function getTagsFilter(tags, prop){
+
+    //no tags set
+    if ( (tags || []).length === 0) {
+        return ["==", "", ["get", prop]]
+    };
+  
+    //expression for each tag
+    const tagFilters = tags.map(tag=>['in',tag,['get', prop]])
+  
+    return ['any'].concat(tagFilters);
+  
+}
