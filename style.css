@@ -7,3 +7,30 @@ body {
     height: 100vh;
     width: 100vw;
 }
+
+.data-filters {
+    background-color: #f2f3f0d6;
+    border-radius: 10px;
+    font-family: "Cormorand Garamond", serif;
+    font-size: 14px;
+    padding: 12px;
+    width: 220px;
+    max-height: 80vh;
+    overflow: scroll;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+}
+
+ul {
+    list-style: none;
+}
+
+.data-filters span {
+    font-weight: bold;
+}
+
+.data-filters span, label {
+    padding-left: 6px;
+    display: inline;
+}

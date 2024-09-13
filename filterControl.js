@@ -22,21 +22,21 @@ class filterControl {
         header.textContent = 'Filters';
         this._container.appendChild(header);
 
-        const helpBtn = document.createElement('button');
-        helpBtn.dataset.bsContainer = "body";
-        helpBtn.dataset.bsToggle = "popover";
-        helpBtn.dataset.bsPlacement = "left";
-        helpBtn.dataset.bsContent = `Expand a category and uncheck an item to filter out those images. 
-            Uncheck a category heading to stop using that filter (all images return).`;
+        // const helpBtn = document.createElement('button');
+        // helpBtn.dataset.bsContainer = "body";
+        // helpBtn.dataset.bsToggle = "popover";
+        // helpBtn.dataset.bsPlacement = "left";
+        // helpBtn.dataset.bsContent = `Expand a category and uncheck an item to filter out those images. 
+        //     Uncheck a category heading to stop using that filter (all images return).`;
 
-        helpBtn.textContent = '?';
-        helpBtn.classList.add('btn', 'btn-dark');
+        // helpBtn.textContent = '?';
+        // helpBtn.classList.add('btn', 'btn-dark');
 
-        helpBtn.addEventListener('click', (e) => {
+        // helpBtn.addEventListener('click', (e) => {
 
-        })
+        // })
 
-        this._container.appendChild(helpBtn);
+        // this._container.appendChild(helpBtn);
 
         categories.forEach(c => {
 
