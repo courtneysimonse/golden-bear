@@ -102,7 +102,7 @@ map.on('load', () => {
         }
     });
 
-    let categories = ["year", "ship"];
+    let categories = ["ship"];
 
     const filterEl = new filterControl({categories: categories, data: tripsJson.features});
     const filters = filterEl.startingFilters();
