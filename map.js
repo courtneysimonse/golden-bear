@@ -16,7 +16,7 @@ const portsFeatures = await d3.csv('https://docs.google.com/spreadsheets/d/1n-2K
 
 const map = new maplibregl.Map({
     container: 'map', // container id
-    style: 'https://tiles.stadiamaps.com/styles/alidade_smooth.json', // style URL
+    style: '/styles/indiana_jones.json', // style URL
     center: [-180, 12], // starting position [lng, lat]
     zoom: 2 // starting zoom
 });
@@ -70,9 +70,9 @@ map.on('load', () => {
         'source': 'trips',
         'type': 'line',
         'paint': {
-            'line-color': '#4a54ad',
-            'line-opacity': 0.6,
-            'line-width': 0.7
+            'line-color': '#D99C52',
+            'line-opacity': 0.2,
+            'line-width': 1.5
         },
         'layout': {
 
@@ -98,7 +98,7 @@ map.on('load', () => {
                 20
             ],
             'circle-opacity': 0.5,
-            'circle-color': '#2f313d'
+            'circle-color': '#D9AC84'
         }
     });
 
