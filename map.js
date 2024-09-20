@@ -105,7 +105,9 @@ map.on('load', () => {
                 20
             ],
             'circle-opacity': portCircleOpacity,
-            'circle-color': portCircleColor
+            'circle-color': portCircleColor,
+            'circle-stroke-width': 1,
+            'circle-stroke-color': portCircleColor
         }
     });
 
@@ -143,9 +145,14 @@ map.on('load', () => {
             map.getCanvas().style.cursor = 'pointer';
             let popupHtml = '';
             let selectedFeatures = [];
+            let selectedArrivals = [];
+            let selectedDepartures = [];
+            popupHtml += `<h4>${features[0].properties['from']} to ${features[0].properties['to']}</h4>`
             features.forEach(feature => {
-                popupHtml += feature.properties['year'] + ', ';
+                popupHtml += `<p>${feature.properties['year']}: ${feature.properties['departure']} to ${feature.properties['arrival']}</p>`;
                 selectedFeatures.push(feature.properties['year']);
+                selectedArrivals.push(feature.properties['arrival']);
+                selectedDepartures.push(feature.properties['departure']);
             })
             popup.setHTML(popupHtml)
                 .setLngLat(e.lngLat)
@@ -153,6 +160,11 @@ map.on('load', () => {
 
             map.setPaintProperty('trips', 'line-color', 
                 ['case',
+                    ['all', 
+                        ['in', ['get', 'arrival'], ['literal', selectedArrivals]],
+                        ['in', ['get', 'departure'], ['literal', selectedDepartures]],
+                        ['in', ['get', 'year'], ['literal', selectedFeatures]]
+                    ], '#d98487',
                     ['in', ['get', 'year'], ['literal', selectedFeatures]], '#D9AC84',
                     tripLineColor
                 ])
