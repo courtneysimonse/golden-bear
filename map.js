@@ -3,7 +3,7 @@ import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7/+esm';
 import * as turf from 'https://cdn.jsdelivr.net/npm/@turf/turf@7.0.0/+esm';
 import filterControl from "./filterControl.js";
 
-const tripsJson = await d3.json('./data/tripLineStrings_split.geojson');
+const tripsJson = await d3.json('./data/tripSegments.geojson');
 
 const portsFeatures = await d3.csv('https://docs.google.com/spreadsheets/d/1n-2Kw8lt628JVir1urXYlBJ8wKA38A_jrL5reco9xBU/gviz/tq?tqx=out:csv&sheet=Ports%20Geocoded', (d) => {
     
@@ -117,7 +117,7 @@ map.on('load', () => {
 
     map.addControl(filterEl, 'top-right');
 
-    const popup = new maplibregl.Popup();
+    const popup = new maplibregl.Popup({closeButton: false});
 
     map.on('mouseenter', 'ports', (e) => {
         map.getCanvas().style.cursor = 'pointer';
