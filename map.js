@@ -3,7 +3,7 @@ import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7/+esm';
 import * as turf from 'https://cdn.jsdelivr.net/npm/@turf/turf@7.0.0/+esm';
 import filterControl from "./filterControl.js";
 
-const tripsJson = await d3.json('./data/tripLineStrings_split.geojson');
+const tripsJson = await d3.json('./data/tripSegments.geojson');
 
 const portsFeatures = await d3.csv('https://docs.google.com/spreadsheets/d/1n-2Kw8lt628JVir1urXYlBJ8wKA38A_jrL5reco9xBU/gviz/tq?tqx=out:csv&sheet=Ports%20Geocoded', (d) => {
     
@@ -62,6 +62,10 @@ map.on('load', () => {
 // * United States 3DEP (formerly NED) and global GMTED2010 and SRTM terrain data
 //   courtesy of the U.S. Geological Survey.
 
+    const tripLineColor = '#D99C52';
+    const tripLineWidth = 1.5;
+    const tripLineOpacity = 0.2;
+
     map.addSource('trips', {
         'type': 'geojson',
         'data': tripsJson
@@ -70,15 +74,18 @@ map.on('load', () => {
         'source': 'trips',
         'type': 'line',
         'paint': {
-            'line-color': '#D99C52',
-            'line-opacity': 0.2,
-            'line-width': 1.5
+            'line-color': tripLineColor,
+            'line-opacity': tripLineOpacity,
+            'line-width': tripLineWidth
         },
         'layout': {
 
         }
     })
     
+
+    const portCircleColor = '#fff';
+    const portCircleOpacity = 0.5;
 
     map.addSource('ports', {
         'type': 'geojson',
@@ -97,8 +104,10 @@ map.on('load', () => {
                 20,
                 20
             ],
-            'circle-opacity': 0.5,
-            'circle-color': '#D9AC84'
+            'circle-opacity': portCircleOpacity,
+            'circle-color': portCircleColor,
+            'circle-stroke-width': 1,
+            'circle-stroke-color': portCircleColor
         }
     });
 
@@ -110,7 +119,7 @@ map.on('load', () => {
 
     map.addControl(filterEl, 'top-right');
 
-    const popup = new maplibregl.Popup();
+    const popup = new maplibregl.Popup({closeButton: false});
 
     map.on('mouseenter', 'ports', (e) => {
         map.getCanvas().style.cursor = 'pointer';
@@ -124,18 +133,66 @@ map.on('load', () => {
         popup.remove();
     })
 
-    map.on('mouseenter', 'trips', (e) => {
-        map.getCanvas().style.cursor = 'pointer';
-        let popupHtml = '';
-        e.features.forEach(feature => popupHtml += feature.properties['year'] + ', ')
-        popup.setHTML(popupHtml)
-            .setLngLat(e.lngLat)
-            .addTo(map);
-    });
+    map.on('mousemove', (e) => {
+        const width = 10;
+        const height = 10;
+        const features = map.queryRenderedFeatures([
+            [e.point.x - width / 2, e.point.y - height / 2],
+            [e.point.x + width / 2, e.point.y + height / 2]
+          ], { layers: ['trips'] });
 
-    map.on('mouseleave', 'trips', () => {
-        map.getCanvas().style.cursor = '';
-    });
+        if (features.length > 0) {
+            map.getCanvas().style.cursor = 'pointer';
+            let popupHtml = '';
+            let selectedFeatures = [];
+            let selectedArrivals = [];
+            let selectedDepartures = [];
+            popupHtml += `<h4>${features[0].properties['from']} to ${features[0].properties['to']}</h4>`
+            features.forEach(feature => {
+                popupHtml += `<p>${feature.properties['year']}: ${feature.properties['departure']} to ${feature.properties['arrival']}</p>`;
+                selectedFeatures.push(feature.properties['year']);
+                selectedArrivals.push(feature.properties['arrival']);
+                selectedDepartures.push(feature.properties['departure']);
+            })
+            popup.setHTML(popupHtml)
+                .setLngLat(e.lngLat)
+                .addTo(map);
+
+            map.setPaintProperty('trips', 'line-color', 
+                ['case',
+                    ['all', 
+                        ['in', ['get', 'arrival'], ['literal', selectedArrivals]],
+                        ['in', ['get', 'departure'], ['literal', selectedDepartures]],
+                        ['in', ['get', 'year'], ['literal', selectedFeatures]]
+                    ], '#d98487',
+                    ['in', ['get', 'year'], ['literal', selectedFeatures]], '#D9AC84',
+                    tripLineColor
+                ])
+            map.setPaintProperty('trips', 'line-width', 
+                ['case',
+                    ['in', ['get', 'year'], ['literal', selectedFeatures]], 3,
+                    tripLineWidth
+                ])
+            map.setPaintProperty('trips', 'line-opacity', 
+                ['case',
+                    ['in', ['get', 'year'], ['literal', selectedFeatures]], 1,
+                    tripLineOpacity
+                ])
+        }
+    })
+
+    // map.on('mouseenter', 'trips', (e) => {
+    //     map.getCanvas().style.cursor = 'pointer';
+    //     let popupHtml = '';
+    //     e.features.forEach(feature => popupHtml += feature.properties['year'] + ', ')
+    //     popup.setHTML(popupHtml)
+    //         .setLngLat(e.lngLat)
+    //         .addTo(map);
+    // });
+
+    // map.on('mouseleave', 'trips', () => {
+    //     map.getCanvas().style.cursor = '';
+    // });
 
     const detailPopup = new maplibregl.Popup({closeOnClick: false});
 
