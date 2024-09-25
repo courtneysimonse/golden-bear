@@ -1,4 +1,3 @@
-
 const filters = {};
 
 class filterControl {
@@ -9,34 +8,14 @@ class filterControl {
         this._categories = options.categories;
         this._data = options.data;
     }
-    onAdd(map) {
+    add(div) {
 
         const categories = this._categories;
         const data = this._data;
 
-        this._map = map;
+        this._div = div;
         this._container = document.createElement('div');
-        this._container.classList = 'maplibregl-ctrl data-filters';
-
-        // const header = document.createElement('h4');
-        // header.textContent = 'Filters';
-        // this._container.appendChild(header);
-
-        // const helpBtn = document.createElement('button');
-        // helpBtn.dataset.bsContainer = "body";
-        // helpBtn.dataset.bsToggle = "popover";
-        // helpBtn.dataset.bsPlacement = "left";
-        // helpBtn.dataset.bsContent = `Expand a category and uncheck an item to filter out those images. 
-        //     Uncheck a category heading to stop using that filter (all images return).`;
-
-        // helpBtn.textContent = '?';
-        // helpBtn.classList.add('btn', 'btn-dark');
-
-        // helpBtn.addEventListener('click', (e) => {
-
-        // })
-
-        // this._container.appendChild(helpBtn);
+        this._container.classList = 'data-filters';
 
         categories.forEach(c => {
 
@@ -106,13 +85,15 @@ class filterControl {
             
         });
 
+        div.appendChild(this._container);
+
         return this._container;
 
     }
 
     onRemove() {
         this._container.parentNode.removeChild(this._container);
-        this._map = undefined;
+        this._div = undefined;
     }
 
     startingFilters() {
@@ -127,7 +108,7 @@ function addSummary(category) {
 
     let input = document.createElement('input');
     input.type = 'checkbox';
-    input.classList.add('image-filter-heading');
+    input.classList.add('data-filter-heading');
     input.id = `check-${category.replaceAll(' ','-')}`;
     input.dataset.category = category;
     input.checked = true;
@@ -154,7 +135,7 @@ function createDetails(options) {
         
         let input = document.createElement('input');
         input.type = 'checkbox';
-        input.classList.add('image-filter');
+        input.classList.add('data-filter');
         input.id = `${l.replaceAll(' ','-')}`;
         input.dataset.name = l;
         input.checked = true;

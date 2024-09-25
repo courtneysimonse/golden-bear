@@ -6,7 +6,7 @@ body {
 
 #map {
     height: 100vh;
-    width: 100vw;
+    flex-grow: 1;
 }
 
 .filter-sidebar {
@@ -19,11 +19,11 @@ body {
 }
 
 
-.filter-sidebar summary {
+.filter-sidebar h3 {
     padding: 16px;
 }
 
-summary {
+/* summary {
     cursor: pointer;
     color: #000;
     font-size: 22px;
@@ -32,7 +32,7 @@ summary {
     letter-spacing: 0em;
     text-align: left;
     border: 1px solid #ddd;
-}
+} */
 
 .data-filters {
     background-color: #f2f3f0d6;
@@ -40,16 +40,12 @@ summary {
     font-family: "Cormorand Garamond", serif;
     font-size: 14px;
     padding: 12px;
-    width: 220px;
-    max-height: 80vh;
-    overflow: scroll;
     list-style: none;
-    display: flex;
-    flex-direction: column;
 }
 
 ul {
     list-style: none;
+    padding-left: 20px;
 }
 
 .data-filters span {
@@ -94,7 +90,7 @@ ul {
 @media (min-width: 600px) {
     .filter-sidebar {
         width: 200px;
-        height: calc(100vh - 62.25px - 32px);
+        height: 100vh;
     }
 
     .mobile {

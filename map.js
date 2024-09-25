@@ -18,29 +18,15 @@ const map = new maplibregl.Map({
     container: 'map', // container id
     style: '/styles/indiana_jones.json', // style URL
     center: [-180, 12], // starting position [lng, lat]
-    zoom: 2 // starting zoom
+    zoom: 2, // starting zoom
+    attributionControl: false
 });
 
 map.on('load', () => {
 
-    map.addSource('elevation', {
-        "type": "raster-dem",
-        "tiles": ["https://tiles.stadiamaps.com/data/terrarium/{z}/{x}/{y}.png"],
-        "minzoom": 0,
-        "maxzoom": 14,
-        "encoding": "terrarium"
-    }).addLayer({
-        "id": "hillshade",
-        "type": "hillshade",
-        "source": "elevation",
-        "maxzoom": 14,
-        "paint": {
-            "hillshade-exaggeration": 0.2,
-            "hillshade-shadow-color": "#5b4128",
-            "hillshade-accent-color": "#5b4128",
-            "hillshade-highlight-color": "#e1e1e1"
-        }
-    })
+    map.addControl(new maplibregl.AttributionControl({
+        compact: true
+    }));
 
 // Terrain attribution
 //     * ArcticDEM terrain data DEM(s) were created from DigitalGlobe, Inc., imagery and
@@ -115,9 +101,10 @@ map.on('load', () => {
 
     const filterEl = new filterControl({categories: categories, data: tripsJson.features});
     const filters = filterEl.startingFilters();
+    filterEl.add(document.getElementById('ship-filter'))
 
 
-    map.addControl(filterEl, 'top-right');
+    // map.addControl(filterEl, 'top-right');
 
     const popup = new maplibregl.Popup({closeButton: false});
 
@@ -214,7 +201,7 @@ map.on('load', () => {
     [...checkboxes].forEach(check => {
         check.addEventListener('change', (e) => {
 
-            if (e.target.className == 'image-filter') {
+            if (e.target.className == 'data-filter') {
                 let cat = e.target.parentNode.parentNode.parentNode.dataset.filter;
                 let item = e.target.nextSibling.textContent;
 
@@ -239,7 +226,7 @@ map.on('load', () => {
                     filters[category].status = "off";
                 } else {
                     filters[category].status = "on"
-                    const listInputs = document.querySelectorAll('.image-filter');
+                    const listInputs = document.querySelectorAll('.data-filter');
                     listInputs.forEach(input => {
 
                         let item = input.nextSibling.textContent;
@@ -265,7 +252,7 @@ map.on('load', () => {
     })
 
     function updateMarkers() {
-        // filter images
+        // filter trips
         
         let filterExp = ["all"];
         for (const c in filters) {
@@ -284,20 +271,24 @@ map.on('load', () => {
         const shipFiltered = tripsJson.features.filter(t => filters["ship"].values.includes(t.properties["ship"]));
         const numFiltered = shipFiltered.length;
     
-        if (numFiltered < 50) {
+        if (numFiltered < 100 && numFiltered > 0) {
             let bounds = new maplibregl.LngLatBounds();
     
             shipFiltered.forEach(s => {
                 if (s.geometry.coordinates[0].length > 1) {
                     s.geometry.coordinates.forEach(l => {
-                        if (l.length > 1) {
-                            l.forEach(c => bounds.extend(c))
-                        }
+                        bounds.extend(l);
                     })
                 }
             })
 
             map.fitBounds(bounds, {padding: 25})
+
+            map.setPaintProperty('trips', 'line-width', tripLineWidth + 0.5);
+            map.setPaintProperty('trips', 'line-opacity', 1);
+        } else {
+            map.setPaintProperty('trips', 'line-width', tripLineWidth);
+            map.setPaintProperty('trips', 'line-opacity', tripLineOpacity);
         }
     }
 })
