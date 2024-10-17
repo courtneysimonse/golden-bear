@@ -98,3 +98,14 @@ ul {
     }
 
 }
+
+/* filter-sidebar.css */
+.noUiSlider {
+    margin: 15px 0;
+}
+
+.year-label {
+    font-weight: bold;
+    margin-bottom: 10px;
+    display: block;
+}
