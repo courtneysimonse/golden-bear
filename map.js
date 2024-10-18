@@ -137,13 +137,25 @@ map.on('load', () => {
             let selectedFeatures = [];
             let selectedArrivals = [];
             let selectedDepartures = [];
-            popupHtml += `<h4>${features[0].properties['from']} to ${features[0].properties['to']}</h4>`
-            features.forEach(feature => {
-                popupHtml += `<p>${feature.properties['year']}: ${feature.properties['departure']} to ${feature.properties['arrival']}</p>`;
-                selectedFeatures.push(feature.properties['year']);
-                selectedArrivals.push(feature.properties['arrival']);
-                selectedDepartures.push(feature.properties['departure']);
-            })
+            let previousFrom = '';
+            let previousTo = '';
+            // popupHtml += `<h4>${features[0].properties['from']} to ${features[0].properties['to']}</h4>`
+            features.forEach(({ properties }) => {
+                const { from, to, year, departure, arrival } = properties;
+                
+                // Add heading for new "from" to "to" changes
+                if (from !== previousFrom || to !== previousTo) {
+                    popupHtml += `<h4>${from} to ${to}</h4>`;
+                    previousFrom = from;  // Update previous "from"
+                    previousTo = to;
+                }
+    
+                // Add year and trip details to the popup
+                popupHtml += `<p>${year}: ${departure} to ${arrival}</p>`;
+                selectedFeatures.push(year);
+                selectedArrivals.push(arrival);
+                selectedDepartures.push(departure);
+            });
             popup.setHTML(popupHtml)
                 .setLngLat(e.lngLat)
                 .addTo(map);
@@ -168,6 +180,9 @@ map.on('load', () => {
                     ['in', ['get', 'year'], ['literal', selectedFeatures]], 1,
                     tripLineOpacity
                 ])
+        } else {
+            // Reset cursor if no features are found
+            map.getCanvas().style.cursor = '';
         }
     })
 
