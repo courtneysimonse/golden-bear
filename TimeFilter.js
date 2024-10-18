@@ -33,12 +33,24 @@ class TimeFilter {
                 max: +this.endYear.toFormat('yyyy')
             },
             step: 1, // Increment by 1 year
-            tooltips: true,
+            // tooltips: true,
             connect: true, // Visually connect the handles
             format: {
                 to: (value) => Math.round(value), // Display as integer
                 from: (value) => Number(value),
+            },
+            pips: {
+                mode: 'positions',
+                values: [0, 25, 50, 75, 100],
+                density: 4,
+                stepped: true
             }
+        });
+
+        // Handle slider updates for the range
+        sliderDiv.noUiSlider.on('update', (values) => {
+            this.selectedYears = values.map(v => Math.round(v));
+            yearLabel.innerText = `Years: ${this.selectedYears[0]} - ${this.selectedYears[1]}`;
         });
 
         // Handle slider updates for the range
