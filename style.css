@@ -57,6 +57,13 @@ ul {
     display: inline;
 }
 
+.maplibregl-popup-content {
+    pointer-events: none;
+}
+.maplibregl-popup-content button {
+    pointer-events: all;
+}
+
 /* Responsive Design */
 @media (max-width: 600px) {
 

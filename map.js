@@ -151,7 +151,7 @@ map.on('load', () => {
                 }
     
                 // Add year and trip details to the popup
-                popupHtml += `<p>${year}: ${departure} to ${arrival}</p>`;
+                popupHtml += `<p>${year}: ${arrival} to ${departure}</p>`;
                 selectedFeatures.push(year);
                 selectedArrivals.push(arrival);
                 selectedDepartures.push(departure);
@@ -204,14 +204,47 @@ map.on('load', () => {
     map.on('click', 'ports', (e) => {
         let popupHtml = '';
         const city = e.features[0].properties['city'];
-        const frequency = e.features[0].properties['count']
+        const frequency = e.features[0].properties['count'];
 
         popupHtml = `<h3>${city}</h3>
             </p>Number of Visits: ${frequency}</p>`;
 
-        detailPopup.setHTML(popupHtml)
-            .setLngLat(e.lngLat)
-            .addTo(map);
+        let lng = e.lngLat.lng;
+        if (lng < -180) {
+            lng = lng + 180;
+        } else if (lng > 180) {
+            lng = lng - 180;
+        }
+
+        // const url = `https://api.openweathermap.org/data/2.5/weather?lat=${e.lngLat.lat}&lon=${lng}&units=imperial&appid=${"a37045a560107d4796a12d1983878099"}`;
+        // fetch(url)
+        //     .then((data) => {
+        //         data.json()
+        //             .then((json) => {
+        //                 console.log(json);
+        //                 popupHtml += `<p>Temp: ${json.main.temp}&deg;F</p>`
+        //                 popupHtml += `<p>Weather: ${json.weather[0].description}</p>`
+                    
+        //                 detailPopup.setHTML(popupHtml)
+        //                 .setLngLat(e.lngLat)
+        //                 .addTo(map);
+        //             })
+        //     })
+
+        fetch(`/.netlify/functions/weather?lat=${e.lngLat.lat}&lng=${lng}`)
+            .then((data) => {
+                data.json()
+                    .then((json) => {
+                        console.log(json);
+                        popupHtml += `<p>Temp: ${json.main.temp}&deg;F</p>`
+                        popupHtml += `<p>Weather: ${json.weather[0].description}</p>`
+                    
+                        detailPopup.setHTML(popupHtml)
+                        .setLngLat(e.lngLat)
+                        .addTo(map);
+                    })
+            })
+
 
     })
 
