@@ -1,7 +1,8 @@
 import 'https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.js';
 import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7/+esm';
 import * as turf from 'https://cdn.jsdelivr.net/npm/@turf/turf@7.0.0/+esm';
-import filterControl from "./filterControl.js";
+import FilterControl from "./FilterControl.js";
+import TimeFilter from './TimeFilter.js';
 
 const tripsJson = await d3.json('./data/tripSegments.geojson');
 
@@ -99,10 +100,12 @@ map.on('load', () => {
 
     let categories = ["ship"];
 
-    const filterEl = new filterControl({categories: categories, data: tripsJson.features});
+    const filterEl = new FilterControl({categories: categories, data: tripsJson.features});
     const filters = filterEl.startingFilters();
-    filterEl.add(document.getElementById('ship-filter'))
+    filterEl.add(document.getElementById('ship-filter'));
 
+    const timeFilter = new TimeFilter('year-filter', 2000, 2024, updateMapWithYearRange);
+    const years = [1931, 2024];
 
     // map.addControl(filterEl, 'top-right');
 
@@ -134,13 +137,25 @@ map.on('load', () => {
             let selectedFeatures = [];
             let selectedArrivals = [];
             let selectedDepartures = [];
-            popupHtml += `<h4>${features[0].properties['from']} to ${features[0].properties['to']}</h4>`
-            features.forEach(feature => {
-                popupHtml += `<p>${feature.properties['year']}: ${feature.properties['departure']} to ${feature.properties['arrival']}</p>`;
-                selectedFeatures.push(feature.properties['year']);
-                selectedArrivals.push(feature.properties['arrival']);
-                selectedDepartures.push(feature.properties['departure']);
-            })
+            let previousFrom = '';
+            let previousTo = '';
+            // popupHtml += `<h4>${features[0].properties['from']} to ${features[0].properties['to']}</h4>`
+            features.forEach(({ properties }) => {
+                const { from, to, year, departure, arrival } = properties;
+                
+                // Add heading for new "from" to "to" changes
+                if (from !== previousFrom || to !== previousTo) {
+                    popupHtml += `<h4>${from} to ${to}</h4>`;
+                    previousFrom = from;  // Update previous "from"
+                    previousTo = to;
+                }
+    
+                // Add year and trip details to the popup
+                popupHtml += `<p>${year}: ${arrival} to ${departure}</p>`;
+                selectedFeatures.push(year);
+                selectedArrivals.push(arrival);
+                selectedDepartures.push(departure);
+            });
             popup.setHTML(popupHtml)
                 .setLngLat(e.lngLat)
                 .addTo(map);
@@ -165,6 +180,9 @@ map.on('load', () => {
                     ['in', ['get', 'year'], ['literal', selectedFeatures]], 1,
                     tripLineOpacity
                 ])
+        } else {
+            // Reset cursor if no features are found
+            map.getCanvas().style.cursor = '';
         }
     })
 
@@ -186,14 +204,32 @@ map.on('load', () => {
     map.on('click', 'ports', (e) => {
         let popupHtml = '';
         const city = e.features[0].properties['city'];
-        const frequency = e.features[0].properties['count']
+        const frequency = e.features[0].properties['count'];
 
         popupHtml = `<h3>${city}</h3>
-            </p>Number of Visits: ${frequency}</p>`;
+            <p>Number of Visits: ${frequency}</p>`;
 
-        detailPopup.setHTML(popupHtml)
-            .setLngLat(e.lngLat)
-            .addTo(map);
+        let lng = e.lngLat.lng;
+        if (lng < -180) {
+            lng = lng + 180;
+        } else if (lng > 180) {
+            lng = lng - 180;
+        }
+
+        fetch(`/.netlify/functions/weather?lat=${e.lngLat.lat}&lng=${lng}`)
+            .then((data) => {
+                data.json()
+                    .then((json) => {
+                        console.log(json);
+                        popupHtml += `<p>Temp: ${json.main.temp}&deg;F</p>`
+                        popupHtml += `<p>Weather: ${json.weather[0].description}</p>`
+                    
+                        detailPopup.setHTML(popupHtml)
+                        .setLngLat(e.lngLat)
+                        .addTo(map);
+                    })
+            })
+
 
     })
 
@@ -262,6 +298,8 @@ map.on('load', () => {
                 filterExp.push(getTagsFilter(filters[c].values, c))
             }
         }
+
+        filterExp.push([">=", ["to-number", ["get", "year"]], years[0]], ["<=", ["to-number", ["get", "year"]], years[1]])
     
         map.setFilter('trips', filterExp);
     }
@@ -291,7 +329,19 @@ map.on('load', () => {
             map.setPaintProperty('trips', 'line-opacity', tripLineOpacity);
         }
     }
-})
+
+    
+    function updateMapWithYearRange(yearRange) {
+        const [minYear, maxYear] = yearRange;
+        console.log(`Filtering map data for years between: ${minYear} - ${maxYear}`);
+        // Logic to filter map layers/data based on the year range
+        years[0] = minYear;
+        years[1] = maxYear;
+
+
+        updateMarkers();
+    }
+})  //end map on load
 
 
 function getTagsFilter(tags, prop){

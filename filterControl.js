@@ -1,6 +1,6 @@
 const filters = {};
 
-class filterControl {
+class FilterControl {
     constructor(options) {
         if (!options || !options.categories || !options.data) {
             throw new Error('Invalid options. "categories" and "data" are required.');
@@ -158,4 +158,4 @@ function createDetails(options) {
     
 }
 
-export default filterControl;
+export default FilterControl;

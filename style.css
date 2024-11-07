@@ -57,6 +57,13 @@ ul {
     display: inline;
 }
 
+.maplibregl-popup-content {
+    pointer-events: none;
+}
+.maplibregl-popup-content button {
+    pointer-events: all;
+}
+
 /* Responsive Design */
 @media (max-width: 600px) {
 
@@ -97,4 +104,31 @@ ul {
         display: none;
     }
 
+}
+
+/* filter-sidebar.css */
+#year-filter {
+    margin: 16px;
+}
+
+.noUiSlider {
+    margin: 15px 0;
+}
+
+.year-label {
+    font-weight: bold;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.noUi-connect {
+    background-color: #5a291f;
+}
+
+.noUi-pips {
+    color: #000;
+}
+
+.noUi-value-horizontal {
+    padding-top: 6px;
 }
