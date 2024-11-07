@@ -1400,7 +1400,7 @@
       "paint": {
         "text-halo-width": 1.4,
         "text-halo-color": "rgba(20, 19, 16, 0.43)",
-        "text-color": "rgba(191, 111, 65)"
+        "text-color": "rgb(191, 111, 65)"
       }
     },
     {
@@ -1441,7 +1441,7 @@
       },
       "paint": {
         "text-halo-color": "rgba(20, 19, 16, 0.43)",
-        "text-color": "rgba(191, 111, 65)",
+        "text-color": "rgb(191, 111, 65)",
         "text-halo-width": 1.5
       }
     },
