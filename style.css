@@ -73,15 +73,19 @@ ul {
     overflow: scroll;
 }
 
-.maplibregl-popup-content
-
 .maplibregl-popup-content h4 {
     margin: 0;
+    pointer-events: none;
 }
 
 .maplibregl-popup-content p {
     margin: 0;
     padding-bottom: 0.2rem;
+    pointer-events: none;
+}
+
+.maplibregl-popup .popup {
+    pointer-events: all;
 }
 
 .maplibregl-popup-content button {

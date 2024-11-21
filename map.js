@@ -117,6 +117,9 @@ map.on('load', () => {
         closeOnClick: false, 
         className: 'popup'
     });
+    const detailPopup = new maplibregl.Popup({
+        closeOnClick: false
+    });
 
     map.on('mouseenter', 'ports', (e) => {
         map.getCanvas().style.cursor = 'pointer';
@@ -164,7 +167,7 @@ map.on('load', () => {
                 selectedDepartures.push(departure);
             });
 
-            if (!popup.isOpen()) {
+            if (!popup.isOpen() && !detailPopup.isOpen()) {
                 tooltip.setHTML(popupHtml)
                 .setLngLat(e.lngLat)
                 .addTo(map);
@@ -272,7 +275,6 @@ map.on('load', () => {
     //     map.getCanvas().style.cursor = '';
     // });
 
-    const detailPopup = new maplibregl.Popup({closeOnClick: false});
 
     map.on('click', 'ports', (e) => {
         let popupHtml = '';
