@@ -468,14 +468,16 @@ map.on('load', () => {
                             const description = result.description?.value || "No description available";
                             const imageUrl = result.image?.value;
 
-                            wikidataHtml += `
-                                <p>${description}</p>
-                            `;
                             if (imageUrl) {
                                 wikidataHtml += `
                                     <img src="${imageUrl}" alt="${label}" style="max-width: 100%; height: auto;" />
                                 `;
                             }
+                            
+                            wikidataHtml += `
+                                <p>${description}</p>
+                            `;
+
                         } else {
                             wikidataHtml += `<p>Wikidata information unavailable</p>`;
                         }
