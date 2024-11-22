@@ -66,11 +66,14 @@ ul {
 .maplibregl-popup-content {
     pointer-events: none;
     padding: 0.5rem;
-    background-color: #e1ab8b;
-    color: #330108;
+    background-color: #f5f4f2;
+    color: #200005;
     font-family: "Modern Antiqua", serif;
     max-height: 150px;
     overflow: scroll;
+    border: 1px solid #200005;
+    border-radius: 5px;
+    box-shadow: 1px 1px 2px #200005;
 }
 
 .maplibregl-popup-content h4 {
@@ -92,21 +95,29 @@ ul {
     pointer-events: all;
 }
 
+.maplibregl-popup-tip {
+    z-index: 0;
+}
+
 .maplibregl-popup-anchor-left .maplibregl-popup-tip {
-	border-right-color: #D9946C;
+	border-right-color: #f7ead3;
 }
 .maplibregl-popup-anchor-bottom .maplibregl-popup-tip {
-	border-top-color: #D9946C;
+	border-top-color: #f7ead3;
 }
 .maplibregl-popup-anchor-top .maplibregl-popup-tip {
-	border-bottom-color: #D9946C;
+	border-bottom-color: #f7ead3;
 }
 .maplibregl-popup-anchor-right .maplibregl-popup-tip {
-	border-left-color: #D9946C;
+	border-left-color: #f7ead3;
 }
 
 .maplibregl-popup-close-button {
 	font-size: 1rem;
+}
+
+.port-info {
+    padding: 10px;
 }
 
 /* Responsive Design */

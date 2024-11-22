@@ -10,7 +10,8 @@ const portsFeatures = await d3.csv('https://docs.google.com/spreadsheets/d/1n-2K
     
     return turf.point([+d['Lng'], +d['Lat']], {
         city: d['Cleaned Port'],
-        count: +d['Frequency']
+        count: +d['Frequency'],
+        wikidataId: d['Wikidata ID']
     });
 });
 
@@ -28,26 +29,6 @@ map.on('load', () => {
     map.addControl(new maplibregl.AttributionControl({
         compact: true
     }));
-
-// Terrain attribution
-//     * ArcticDEM terrain data DEM(s) were created from DigitalGlobe, Inc., imagery and
-//   funded under National Science Foundation awards 1043681, 1559691, and 1542736;
-// * Australia terrain data © Commonwealth of Australia (Geoscience Australia) 2017;
-// * Austria terrain data © offene Daten Österreichs – Digitales Geländemodell (DGM)
-//   Österreich;
-// * Canada terrain data contains information licensed under the Open Government
-//   Licence – Canada;
-// * Europe terrain data produced using Copernicus data and information funded by the
-//   European Union - EU-DEM layers;
-// * Global ETOPO1 terrain data U.S. National Oceanic and Atmospheric Administration
-// * Mexico terrain data source: INEGI, Continental relief, 2016;
-// * New Zealand terrain data Copyright 2011 Crown copyright (c) Land Information New
-//   Zealand and the New Zealand Government (All rights reserved);
-// * Norway terrain data © Kartverket;
-// * United Kingdom terrain data © Environment Agency copyright and/or database right
-//   2015. All rights reserved;
-// * United States 3DEP (formerly NED) and global GMTED2010 and SRTM terrain data
-//   courtesy of the U.S. Geological Survey.
 
     const tripLineColor = '#D99C52';
     const tripLineWidth = 1.5;
@@ -100,167 +81,171 @@ map.on('load', () => {
         }
     });
 
-    let categories = ["ship"];
+    let categories = ["ship", "from", "to"];
 
     const filterEl = new FilterControl({categories: categories, data: tripsJson.features});
     const filters = filterEl.startingFilters();
     filterEl.add(document.getElementById('ship-filter'));
+
+    // const portFilterEl = new FilterControl({categories: ["port"], data: tripsJson.features});
+    // const portFilters = filterEl.startingFilters();
+    // portFilterEl.add(document.getElementById('port-filter'));
 
     const timeFilter = new TimeFilter('year-filter', 2000, 2024, updateMapWithYearRange);
     const years = [1931, 2024];
 
     // map.addControl(filterEl, 'top-right');
 
-    const tooltip = new maplibregl.Popup({closeButton: false});
-    const popup = new maplibregl.Popup({
-        closeButton: true, 
-        closeOnClick: false, 
-        className: 'popup'
-    });
-    const detailPopup = new maplibregl.Popup({
-        closeOnClick: false
-    });
+    // const tooltip = new maplibregl.Popup({closeButton: false});
+    // const popup = new maplibregl.Popup({
+    //     closeButton: true, 
+    //     closeOnClick: false, 
+    //     className: 'popup'
+    // });
+    // const detailPopup = new maplibregl.Popup({
+    //     closeOnClick: false
+    // });
 
-    map.on('mouseenter', 'ports', (e) => {
-        map.getCanvas().style.cursor = 'pointer';
-        tooltip.setHTML(e.features[0].properties['city'])
-            .setLngLat(e.features[0].geometry.coordinates)
-            .addTo(map);
-    });
+    // map.on('mouseenter', 'ports', (e) => {
+    //     map.getCanvas().style.cursor = 'pointer';
+    //     tooltip.setHTML(e.features[0].properties['city'])
+    //         .setLngLat(e.features[0].geometry.coordinates)
+    //         .addTo(map);
+    // });
 
-    map.on('mouseleave', 'ports', () => {
-        map.getCanvas().style.cursor = '';
-        tooltip.remove();
-    })
+    // map.on('mouseleave', 'ports', () => {
+    //     map.getCanvas().style.cursor = '';
+    //     tooltip.remove();
+    // })
 
-    map.on('mousemove', (e) => {
-        const width = 10;
-        const height = 10;
-        const features = map.queryRenderedFeatures([
-            [e.point.x - width / 2, e.point.y - height / 2],
-            [e.point.x + width / 2, e.point.y + height / 2]
-          ], { layers: ['trips'] });
+    // map.on('mousemove', (e) => {
+    //     const width = 10;
+    //     const height = 10;
+    //     const features = map.queryRenderedFeatures([
+    //         [e.point.x - width / 2, e.point.y - height / 2],
+    //         [e.point.x + width / 2, e.point.y + height / 2]
+    //       ], { layers: ['trips'] });
 
-        if (features.length > 0) {
-            map.getCanvas().style.cursor = 'pointer';
-            let popupHtml = '';
-            let selectedFeatures = [];
-            let selectedArrivals = [];
-            let selectedDepartures = [];
-            let previousFrom = '';
-            let previousTo = '';
-            // popupHtml += `<h4>${features[0].properties['from']} to ${features[0].properties['to']}</h4>`
-            features.forEach(({ properties }) => {
-                const { from, to, year, departure, arrival } = properties;
+    //     if (features.length > 0) {
+    //         map.getCanvas().style.cursor = 'pointer';
+    //         let popupHtml = '';
+    //         let selectedFeatures = [];
+    //         let selectedArrivals = [];
+    //         let selectedDepartures = [];
+    //         let previousFrom = '';
+    //         let previousTo = '';
+    //         // popupHtml += `<h4>${features[0].properties['from']} to ${features[0].properties['to']}</h4>`
+    //         features.forEach(({ properties }) => {
+    //             const { from, to, year, departure, arrival } = properties;
                 
-                // Add heading for new "from" to "to" changes
-                if (from !== previousFrom || to !== previousTo) {
-                    popupHtml += `<h4>${from} to ${to}</h4>`;
-                    previousFrom = from;  // Update previous "from"
-                    previousTo = to;
-                }
+    //             // Add heading for new "from" to "to" changes
+    //             if (from !== previousFrom || to !== previousTo) {
+    //                 popupHtml += `<h4>${from} to ${to}</h4>`;
+    //                 previousFrom = from;  // Update previous "from"
+    //                 previousTo = to;
+    //             }
     
-                // Add year and trip details to the popup
-                popupHtml += `<p>${year}: ${arrival} to ${departure}</p>`;
-                selectedFeatures.push(year);
-                selectedArrivals.push(arrival);
-                selectedDepartures.push(departure);
-            });
+    //             // Add year and trip details to the popup
+    //             popupHtml += `<p>${year}: ${arrival} to ${departure}</p>`;
+    //             selectedFeatures.push(year);
+    //             selectedArrivals.push(arrival);
+    //             selectedDepartures.push(departure);
+    //         });
 
-            if (!popup.isOpen() && !detailPopup.isOpen()) {
-                tooltip.setHTML(popupHtml)
-                .setLngLat(e.lngLat)
-                .addTo(map);
-            }
+    //         if (!popup.isOpen() && !detailPopup.isOpen()) {
+    //             tooltip.setHTML(popupHtml)
+    //             .setLngLat(e.lngLat)
+    //             .addTo(map);
+    //         }
 
-            map.setPaintProperty('trips', 'line-color', 
-                ['case',
-                    ['all', 
-                        ['in', ['get', 'arrival'], ['literal', selectedArrivals]],
-                        ['in', ['get', 'departure'], ['literal', selectedDepartures]],
-                        ['in', ['get', 'year'], ['literal', selectedFeatures]]
-                    ], tripHighlightColor,
-                    ['in', ['get', 'year'], ['literal', selectedFeatures]], tripHighlightColor2,
-                    tripLineColor
-                ])
-            map.setPaintProperty('trips', 'line-width', 
-                ['case',
-                    ['in', ['get', 'year'], ['literal', selectedFeatures]], 3,
-                    tripLineWidth
-                ])
-            map.setPaintProperty('trips', 'line-opacity', 
-                ['case',
-                    ['in', ['get', 'year'], ['literal', selectedFeatures]], 1,
-                    tripLineOpacity
-                ])
-        } else {
-            // Reset cursor if no features are found
-            map.getCanvas().style.cursor = '';
-        }
-    })
+    //         map.setPaintProperty('trips', 'line-color', 
+    //             ['case',
+    //                 ['all', 
+    //                     ['in', ['get', 'arrival'], ['literal', selectedArrivals]],
+    //                     ['in', ['get', 'departure'], ['literal', selectedDepartures]],
+    //                     ['in', ['get', 'year'], ['literal', selectedFeatures]]
+    //                 ], tripHighlightColor,
+    //                 ['in', ['get', 'year'], ['literal', selectedFeatures]], tripHighlightColor2,
+    //                 tripLineColor
+    //             ])
+    //         map.setPaintProperty('trips', 'line-width', 
+    //             ['case',
+    //                 ['in', ['get', 'year'], ['literal', selectedFeatures]], 3,
+    //                 tripLineWidth
+    //             ])
+    //         map.setPaintProperty('trips', 'line-opacity', 
+    //             ['case',
+    //                 ['in', ['get', 'year'], ['literal', selectedFeatures]], 1,
+    //                 tripLineOpacity
+    //             ])
+    //     } else {
+    //         // Reset cursor if no features are found
+    //         map.getCanvas().style.cursor = '';
+    //     }
+    // })
 
-    map.on('click', ['trips'], (e) => {
-        const width = 10;
-        const height = 10;
-        const features = map.queryRenderedFeatures([
-            [e.point.x - width / 2, e.point.y - height / 2],
-            [e.point.x + width / 2, e.point.y + height / 2]
-          ], { layers: ['trips'] });
+    // map.on('click', ['trips'], (e) => {
+    //     const width = 10;
+    //     const height = 10;
+    //     const features = map.queryRenderedFeatures([
+    //         [e.point.x - width / 2, e.point.y - height / 2],
+    //         [e.point.x + width / 2, e.point.y + height / 2]
+    //       ], { layers: ['trips'] });
 
-        if (features.length > 0) {
-            map.getCanvas().style.cursor = 'pointer';
-            let popupHtml = '';
-            let selectedFeatures = [];
-            let selectedArrivals = [];
-            let selectedDepartures = [];
-            let previousFrom = '';
-            let previousTo = '';
-            // popupHtml += `<h4>${features[0].properties['from']} to ${features[0].properties['to']}</h4>`
-            features.forEach(({ properties }) => {
-                const { from, to, year, departure, arrival } = properties;
+    //     if (features.length > 0) {
+    //         map.getCanvas().style.cursor = 'pointer';
+    //         let popupHtml = '';
+    //         let selectedFeatures = [];
+    //         let selectedArrivals = [];
+    //         let selectedDepartures = [];
+    //         let previousFrom = '';
+    //         let previousTo = '';
+    //         // popupHtml += `<h4>${features[0].properties['from']} to ${features[0].properties['to']}</h4>`
+    //         features.forEach(({ properties }) => {
+    //             const { from, to, year, departure, arrival } = properties;
                 
-                // Add heading for new "from" to "to" changes
-                if (from !== previousFrom || to !== previousTo) {
-                    popupHtml += `<h4>${from} to ${to}</h4>`;
-                    previousFrom = from;  // Update previous "from"
-                    previousTo = to;
-                }
+    //             // Add heading for new "from" to "to" changes
+    //             if (from !== previousFrom || to !== previousTo) {
+    //                 popupHtml += `<h4>${from} to ${to}</h4>`;
+    //                 previousFrom = from;  // Update previous "from"
+    //                 previousTo = to;
+    //             }
     
-                // Add year and trip details to the popup
-                popupHtml += `<p>${year}: ${arrival} to ${departure}</p>`;
-                selectedFeatures.push(year);
-                selectedArrivals.push(arrival);
-                selectedDepartures.push(departure);
-            });
-            popup.setHTML(popupHtml)
-                .setLngLat(e.lngLat)
-                .addTo(map);
+    //             // Add year and trip details to the popup
+    //             popupHtml += `<p>${year}: ${arrival} to ${departure}</p>`;
+    //             selectedFeatures.push(year);
+    //             selectedArrivals.push(arrival);
+    //             selectedDepartures.push(departure);
+    //         });
+    //         popup.setHTML(popupHtml)
+    //             .setLngLat(e.lngLat)
+    //             .addTo(map);
 
-            map.setPaintProperty('trips', 'line-color', 
-                ['case',
-                    ['all', 
-                        ['in', ['get', 'arrival'], ['literal', selectedArrivals]],
-                        ['in', ['get', 'departure'], ['literal', selectedDepartures]],
-                        ['in', ['get', 'year'], ['literal', selectedFeatures]]
-                    ], tripHighlightColor,
-                    ['in', ['get', 'year'], ['literal', selectedFeatures]], tripHighlightColor2,
-                    tripLineColor
-                ])
-            map.setPaintProperty('trips', 'line-width', 
-                ['case',
-                    ['in', ['get', 'year'], ['literal', selectedFeatures]], 3,
-                    tripLineWidth
-                ])
-            map.setPaintProperty('trips', 'line-opacity', 
-                ['case',
-                    ['in', ['get', 'year'], ['literal', selectedFeatures]], 1,
-                    tripLineOpacity
-                ])
-        } else {
-            // Reset cursor if no features are found
-            map.getCanvas().style.cursor = '';
-        }
-    })
+    //         map.setPaintProperty('trips', 'line-color', 
+    //             ['case',
+    //                 ['all', 
+    //                     ['in', ['get', 'arrival'], ['literal', selectedArrivals]],
+    //                     ['in', ['get', 'departure'], ['literal', selectedDepartures]],
+    //                     ['in', ['get', 'year'], ['literal', selectedFeatures]]
+    //                 ], tripHighlightColor,
+    //                 ['in', ['get', 'year'], ['literal', selectedFeatures]], tripHighlightColor2,
+    //                 tripLineColor
+    //             ])
+    //         map.setPaintProperty('trips', 'line-width', 
+    //             ['case',
+    //                 ['in', ['get', 'year'], ['literal', selectedFeatures]], 3,
+    //                 tripLineWidth
+    //             ])
+    //         map.setPaintProperty('trips', 'line-opacity', 
+    //             ['case',
+    //                 ['in', ['get', 'year'], ['literal', selectedFeatures]], 1,
+    //                 tripLineOpacity
+    //             ])
+    //     } else {
+    //         // Reset cursor if no features are found
+    //         map.getCanvas().style.cursor = '';
+    //     }
+    // })
 
     // map.on('mouseenter', 'trips', (e) => {
     //     map.getCanvas().style.cursor = 'pointer';
@@ -276,37 +261,260 @@ map.on('load', () => {
     // });
 
 
-    map.on('click', 'ports', (e) => {
-        let popupHtml = '';
-        const city = e.features[0].properties['city'];
-        const frequency = e.features[0].properties['count'];
+    // map.on('click', 'ports', (e) => {
+    //     let popupHtml = '';
+    //     const city = e.features[0].properties['city'];
+    //     const frequency = e.features[0].properties['count'];
 
-        popupHtml = `<h3>${city}</h3>
-            <p>Number of Visits: ${frequency}</p>`;
+    //     popupHtml = `<h3>${city}</h3>
+    //         <p>Number of Visits: ${frequency}</p>`;
 
-        let lng = e.lngLat.lng;
-        if (lng < -180) {
-            lng = lng + 180;
-        } else if (lng > 180) {
-            lng = lng - 180;
-        }
+    //     let lng = e.lngLat.lng;
+    //     if (lng < -180) {
+    //         lng = lng + 180;
+    //     } else if (lng > 180) {
+    //         lng = lng - 180;
+    //     }
 
-        fetch(`/.netlify/functions/weather?lat=${e.lngLat.lat}&lng=${lng}`)
-            .then((data) => {
-                data.json()
-                    .then((json) => {
-                        console.log(json);
-                        popupHtml += `<p>Temp: ${json.main.temp}&deg;F</p>`
-                        popupHtml += `<p>Weather: ${json.weather[0].description}</p>`
+        // fetch(`/.netlify/functions/weather?lat=${e.lngLat.lat}&lng=${lng}`)
+        //     .then((data) => {
+        //         data.json()
+        //             .then((json) => {
+        //                 console.log(json);
+        //                 popupHtml += `<p>Temp: ${json.main.temp}&deg;F</p>`
+        //                 popupHtml += `<p>Weather: ${json.weather[0].description}</p>`
                     
-                        detailPopup.setHTML(popupHtml)
+        //                 detailPopup.setHTML(popupHtml)
+        //                 .setLngLat(e.lngLat)
+        //                 .addTo(map);
+        //             })
+        //     })
+
+
+    // })
+
+    const popup = new maplibregl.Popup({
+        closeButton: false,
+        closeOnClick: true,
+        anchor: "bottom",
+    });
+
+    // Create a new popup for the click and assign it to activePopup
+    const activePopup = new maplibregl.Popup({
+        closeButton: true,
+        closeOnClick: true,
+        anchor: "bottom",
+    }); // Keep track of the active popup
+    
+    
+    map.on("mouseleave", ["ports", "trips"], () => {
+        map.getCanvas().style.cursor = '';
+        popup.remove();
+    });
+    
+
+    map.on('mousemove', ['ports', 'trips'], (e) => {
+        const width = 10;
+        const height = 10;
+        const features = map.queryRenderedFeatures([
+            [e.point.x - width / 2, e.point.y - height / 2],
+            [e.point.x + width / 2, e.point.y + height / 2]
+          ], { layers: ['ports','trips'] });
+
+        if (features.length > 0) {
+            map.getCanvas().style.cursor = 'pointer';
+
+            const portFeature = e.features.find((feature) => feature.layer.id === "ports");
+            const tripFeature = e.features.find((feature) => feature.layer.id === "trips");
+
+            if (portFeature) {
+                // If a port feature is found, show port tooltip
+                const { city, count } = portFeature.properties;
+                popup
+                    .setLngLat(e.lngLat)
+                    .setHTML(`<h3>${city}</h3><p>Visits: ${count}</p>`)
+                    .addTo(map);
+
+                map.setPaintProperty('ports', 'circle-color', 
+                    ["case", ["==", ["get", "city"], city], "yellow", portCircleColor]
+                )
+            } else if (tripFeature) {
+                let selectedFeatures = [];
+                let selectedArrivals = [];
+                let selectedDepartures = [];
+                let previousFrom = '';
+                let previousTo = '';
+
+                // If no port feature, show trip information for all overlapping trips
+                const popupContent = e.features.map((feature) => {
+                    const { from, to, year, arrival, departure } = feature.properties;
+                    
+                    let popupHtml = '';
+
+                    // Add heading for new "from" to "to" changes
+                    if (from !== previousFrom || to !== previousTo) {
+                        popupHtml += `<h4>${from} to ${to}</h4>`;
+                        previousFrom = from;  // Update previous "from"
+                        previousTo = to;
+                    }
+
+                    // Add year and trip details to the popup
+                    popupHtml += `<p>${year}: ${arrival} to ${departure}</p>`;
+                    selectedFeatures.push(year);
+                    selectedArrivals.push(arrival);
+                    selectedDepartures.push(departure);
+                    
+                    return popupHtml;
+                }).join('<hr>');
+    
+                popup
+                    .setLngLat(e.lngLat)
+                    .setHTML(popupContent)
+                    .addTo(map);
+
+                map.setPaintProperty('trips', 'line-color', 
+                    ['case',
+                        ['all', 
+                            ['in', ['get', 'arrival'], ['literal', selectedArrivals]],
+                            ['in', ['get', 'departure'], ['literal', selectedDepartures]],
+                            ['in', ['get', 'year'], ['literal', selectedFeatures]]
+                        ], tripHighlightColor,
+                        ['in', ['get', 'year'], ['literal', selectedFeatures]], tripHighlightColor2,
+                        tripLineColor
+                    ])
+                map.setPaintProperty('trips', 'line-width', 
+                    ['case',
+                        ['in', ['get', 'year'], ['literal', selectedFeatures]], 3,
+                        tripLineWidth
+                    ])
+                map.setPaintProperty('trips', 'line-opacity', 
+                    ['case',
+                        ['in', ['get', 'year'], ['literal', selectedFeatures]], 1,
+                        tripLineOpacity
+                    ])
+            }
+
+
+           
+        } else {
+            // Reset cursor if no features are found
+            map.getCanvas().style.cursor = '';
+        }
+    })
+
+    
+    map.on("click", ["ports", "trips"], async (e) => {
+        if (e.features.length > 0) {
+            const portFeature = e.features.find((feature) => feature.layer.id === "ports");
+            const tripFeature = e.features.find((feature) => feature.layer.id === "trips");
+    
+            let popupHtml = "";
+    
+            if (portFeature) {
+                const { city, count, wikidataId } = portFeature.properties;
+                popupHtml = `
+                    <h4>${city}</h4>
+                    <p>Number of visits: ${count}</p>
+                `;
+
+                // Fetch weather data
+                const { lat } = e.lngLat;
+                
+                let lng = e.lngLat.lng;
+                if (lng < -180) {
+                    lng = lng + 180;
+                } else if (lng > 180) {
+                    lng = lng - 180;
+                }
+
+                try {
+                    const weatherResponse = await fetch(`/.netlify/functions/weather?lat=${lat}&lng=${lng}`);
+                    const weatherJson = await weatherResponse.json();
+                    popupHtml += `
+                        <p>Temp: ${weatherJson.main.temp}&deg;F</p>
+                        <p>Weather: ${weatherJson.weather[0].description}</p>
+                    `;
+                } catch (error) {
+                    console.error("Error fetching weather data:", error);
+                    popupHtml += `<p>Weather data unavailable</p>`;
+                } finally {
+                    activePopup
+                        .setHTML(popupHtml)
                         .setLngLat(e.lngLat)
                         .addTo(map);
-                    })
-            })
+                }
+
+                // add data to sidebar
+                // Fetch Wikidata information
+                if (wikidataId) {
+                    let wikidataHtml = '';
+                    try {
+                        const wikidataQuery = `
+                            SELECT ?label ?description ?image WHERE {
+                                wd:${wikidataId} rdfs:label ?label .
+                                OPTIONAL { wd:${wikidataId} schema:description ?description . }
+                                OPTIONAL { wd:${wikidataId} wdt:P18 ?image . }
+                                FILTER (lang(?label) = "en" && lang(?description) = "en")
+                            }
+                        `;
+                        const wikidataResponse = await fetch(
+                            `https://query.wikidata.org/sparql?query=${encodeURIComponent(wikidataQuery)}&format=json`
+                        );
+                        const wikidataJson = await wikidataResponse.json();
+
+                        const result = wikidataJson.results.bindings[0];
+                        if (result) {
+                            const label = result.label?.value || "Unknown";
+                            const description = result.description?.value || "No description available";
+                            const imageUrl = result.image?.value;
+
+                            wikidataHtml += `
+                                <p>${description}</p>
+                            `;
+                            if (imageUrl) {
+                                wikidataHtml += `
+                                    <img src="${imageUrl}" alt="${label}" style="max-width: 100%; height: auto;" />
+                                `;
+                            }
+                        } else {
+                            wikidataHtml += `<p>Wikidata information unavailable</p>`;
+                        }
+                    } catch (error) {
+                        console.error("Error fetching Wikidata information:", error);
+                        wikidataHtml += `<p>Wikidata information unavailable</p>`;
+                    } finally {
+                        document.getElementById("port-info").innerHTML = popupHtml + wikidataHtml;
+                    }
+                }
+
+            }
+    
+            if (tripFeature) {
+                // Detailed popup for trips
+                const tripContent = e.features.map((feature) => {
+                    const { from, to, year, arrival, departure } = feature.properties;
+                    return `
+                        <div>
+                            <h4>${from} → ${to}</h4>
+                            <p>${year}: ${arrival} to ${departure}</p>
+                        </div>
+                    `;
+                }).join('<hr>');
+                popupHtml += tripContent;
+
+                activePopup
+                    .setHTML(popupHtml)
+                    .setLngLat(e.lngLat)
+                    .addTo(map);
+            }
 
 
-    })
+
+        }
+
+    });
+    
+    
 
     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
     [...checkboxes].forEach(check => {
