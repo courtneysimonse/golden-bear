@@ -73,7 +73,7 @@ map.on('load', () => {
     })
     
 
-    const portCircleColor = '#fff';
+    const portCircleColor = '#592202';
     const portCircleOpacity = 0.5;
 
     map.addSource('ports', {
