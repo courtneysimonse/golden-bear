@@ -24,11 +24,13 @@ const map = new maplibregl.Map({
     attributionControl: false
 });
 
-map.on('load', () => {
+map.addControl(new maplibregl.AttributionControl({
+    compact: true
+}));
 
-    map.addControl(new maplibregl.AttributionControl({
-        compact: true
-    }));
+map.addControl(new maplibregl.NavigationControl())
+
+map.on('load', () => {
 
     const tripLineColor = '#D99C52';
     const tripLineWidth = 1.5;
@@ -444,50 +446,11 @@ map.on('load', () => {
                         .addTo(map);
                 }
 
-                // add data to sidebar
-                // Fetch Wikidata information
+                // Add data to sidebar
                 if (wikidataId) {
-                    let wikidataHtml = '';
-                    try {
-                        const wikidataQuery = `
-                            SELECT ?label ?description ?image WHERE {
-                                wd:${wikidataId} rdfs:label ?label .
-                                OPTIONAL { wd:${wikidataId} schema:description ?description . }
-                                OPTIONAL { wd:${wikidataId} wdt:P18 ?image . }
-                                FILTER (lang(?label) = "en" && lang(?description) = "en")
-                            }
-                        `;
-                        const wikidataResponse = await fetch(
-                            `https://query.wikidata.org/sparql?query=${encodeURIComponent(wikidataQuery)}&format=json`
-                        );
-                        const wikidataJson = await wikidataResponse.json();
-
-                        const result = wikidataJson.results.bindings[0];
-                        if (result) {
-                            const label = result.label?.value || "Unknown";
-                            const description = result.description?.value || "No description available";
-                            const imageUrl = result.image?.value;
-
-                            if (imageUrl) {
-                                wikidataHtml += `
-                                    <img src="${imageUrl}" alt="${label}" style="max-width: 100%; height: auto;" />
-                                `;
-                            }
-                            
-                            wikidataHtml += `
-                                <p>${description}</p>
-                            `;
-
-                        } else {
-                            wikidataHtml += `<p>Wikidata information unavailable</p>`;
-                        }
-                    } catch (error) {
-                        console.error("Error fetching Wikidata information:", error);
-                        wikidataHtml += `<p>Wikidata information unavailable</p>`;
-                    } finally {
-                        document.getElementById("port-info").innerHTML = popupHtml + wikidataHtml;
-                    }
+                    await fetchWikipediaFromWikidata(wikidataId);
                 }
+
 
             }
     
@@ -641,4 +604,91 @@ function getTagsFilter(tags, prop){
   
     return ['any'].concat(tagFilters);
   
+}
+
+async function fetchWikipediaFromWikidata(wikidataId) {
+    let wikidataHtml = '';
+
+    try {
+        const wikidataQuery = `
+            SELECT ?label ?description ?image WHERE {
+                wd:${wikidataId} rdfs:label ?label .
+                OPTIONAL { wd:${wikidataId} schema:description ?description . }
+                OPTIONAL { wd:${wikidataId} wdt:P18 ?image . }
+                FILTER (lang(?label) = "en" && lang(?description) = "en")
+            }
+        `;
+        const wikidataResponse = await fetch(
+            `https://query.wikidata.org/sparql?query=${encodeURIComponent(wikidataQuery)}&format=json`
+        );
+        const wikidataJson = await wikidataResponse.json();
+
+        const result = wikidataJson.results.bindings[0];
+        if (result) {
+            const label = result.label?.value || "Unknown";
+            const description = result.description?.value || "No description available";
+            const imageUrl = result.image?.value;
+
+            if (imageUrl) {
+                wikidataHtml += `
+                    <img src="${imageUrl}" alt="${label}" style="max-width: 100%; height: auto;" />
+                `;
+            }
+            
+            wikidataHtml += `
+                <p>${description}</p>
+            `;
+
+        } else {
+            wikidataHtml += `<p>Wikidata information unavailable</p>`;
+        }
+    } catch (error) {
+        console.error("Error fetching Wikidata information:", error);
+        wikidataHtml += `<p>Wikidata information unavailable</p>`;
+    }
+
+
+    try {
+        // Fetch site links using Wikidata API
+        const wikidataApiUrl = `https://www.wikidata.org/w/api.php?action=wbgetentities&ids=${wikidataId}&props=sitelinks&format=json&origin=*`;
+        const response = await fetch(wikidataApiUrl);
+        const data = await response.json();
+
+        const entity = data.entities[wikidataId];
+        if (entity && entity.sitelinks && entity.sitelinks.enwiki) {
+            const wikipediaTitle = entity.sitelinks.enwiki.title;
+            const wikipediaUrl = entity.sitelinks.enwiki.url;
+
+            // Fetch Wikipedia summary
+            const wikipediaResponse = await fetch(
+                `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(wikipediaTitle)}`
+            );
+            if (wikipediaResponse.ok) {
+                const wikipediaJson = await wikipediaResponse.json();
+                const description = wikipediaJson.description || "";
+                const extract = wikipediaJson.extract || "";
+
+                if (wikipediaJson.thumbnail && wikipediaJson.thumbnail.source) {
+                    wikidataHtml += `
+                        <img src="${wikipediaJson.thumbnail.source}" alt="${wikipediaTitle}" style="max-width: 100%; height: auto;" />
+                    `;
+                }
+
+                wikidataHtml += `
+                    <h4><a href="https://en.wikipedia.org/wiki/${encodeURIComponent(wikipediaTitle)}" target="_blank">${wikipediaTitle}</a></h4>
+                    <p>${description}</p>
+                    <p>${extract}</p>
+                `;
+            } else {
+                wikidataHtml += `<p>Wikipedia information unavailable</p>`;
+            }
+        } else {
+            wikidataHtml += `<p>Linked Wikipedia article not found</p>`;
+        }
+    } catch (error) {
+        console.error("Error fetching Wikipedia information:", error);
+        wikidataHtml += `<p>Information unavailable</p>`;
+    } finally {
+        document.getElementById("port-info").innerHTML = wikidataHtml;
+    }
 }

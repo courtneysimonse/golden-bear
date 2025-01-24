@@ -36,6 +36,20 @@ def get_results(endpoint_url, query):
     sparql.setReturnFormat(JSON)
     return sparql.query().convert()
 
+
+# Function to get Wikipedia page title for a Wikidata ID
+def get_wikipedia_title(wikidata_id):
+    query = f"""
+    SELECT DISTINCT ?article WHERE {{
+      ?article schema:about wd:{wikidata_id};
+               schema:isPartOf <https://en.wikipedia.org/>.
+    }}
+    """
+    results = get_results(endpoint_url, query)
+    for result in results["results"]["bindings"]:
+        return result["article"]["value"].split("/")[-1]
+    return None
+
 # Main function to process the CSV and return results
 def process_csv(input_csv):
     results = []
@@ -64,10 +78,20 @@ def process_csv(input_csv):
                         for result in sparql_results["results"]["bindings"]
                     ]
                     wikidata_id = wikidata_ids[0] if wikidata_ids else ""
-                results.append({"City": city, "Country": country, "WikidataID": wikidata_id})
+                if wikidata_id:
+                    wikipedia_title = get_wikipedia_title(wikidata_id)
+                else:
+                    wikipedia_title = None
+                
+                results.append({
+                    "City": city,
+                    "Country": country,
+                    "WikidataID": wikidata_id,
+                    "WikipediaTitle": wikipedia_title
+                })
             except Exception as e:
                 print(f"Error processing {city}, {country}: {e}")
-                results.append({"City": city, "Country": country, "WikidataID": ""})
+                results.append({"City": city, "Country": country, "WikidataID": "", "WikipediaTitle": ""})
     return results
 
 # Output the results
@@ -79,7 +103,7 @@ def main():
     
     # Save results to CSV
     with open(output_csv, mode='w', newline='', encoding='utf-8') as csvfile:
-        fieldnames = ["City", "Country", "WikidataID"]
+        fieldnames = ["City", "Country", "WikidataID", "WikipediaTitle"]
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(results)
