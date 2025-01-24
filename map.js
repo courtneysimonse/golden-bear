@@ -28,7 +28,7 @@ map.addControl(new maplibregl.AttributionControl({
     compact: true
 }));
 
-map.addControl(new maplibregl.NavigationControl())
+map.addControl(new maplibregl.NavigationControl());
 
 map.on('load', () => {
 

@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8" />
     <title>Golden Bear Voyages</title>
-
+    
+    <link rel="stylesheet" href="https://early.webawesome.com/webawesome@3.0.0-alpha.9/dist/styles/themes/default.css" />
+    <script type="module" src="https://early.webawesome.com/webawesome@3.0.0-alpha.9/dist/webawesome.loader.js"></script>
+    
     <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.css">
     
     <link href=" https://cdn.jsdelivr.net/npm/nouislider@15.8.1/dist/nouislider.min.css " rel="stylesheet">
@@ -11,33 +14,71 @@
     <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-    <div class="filter-sidebar large-screen">
+    <wa-page mobile-breakpoint="920">
+        
+        <header slot="header" class="wa-split">
 
+            <div class="wa-cluster wa-gap-xs">
+                <wa-button size="small" variant="brand" appearance="outlined">About the Map</wa-button>
+                <wa-button size="small" variant="brand">Contact Us</wa-button>
+            </div>
+        </header>
+        
+        <nav slot="navigation-header">
+            <h2 class="wa-heading-s">Filters</h3>
+
+        </nav>
+        <nav slot="navigation">
+
+            <div class="data-filters">
+                <div id="ship-filter"></div>
+                <div id="year-filter"></div>
+            </div>  
+            
+            <div class="port-info" id="port-info">
+            </div>
+        </nav>
+        
+        
+        <main class="wa-body-l">
+            <div id="map"></div>
+        </main>
+        
+    </wa-page>
+    
+    
+    <script>
+        const sectionAnchors = document.querySelectorAll("[slot*='navigation'] a[href*='#']");
+        sectionAnchors.forEach((sectionAnchor) => sectionAnchor.setAttribute("data-drawer", "close"));
+    </script>
+    
+    <!-- <div class="filter-sidebar large-screen">
+        
         <h3>Filters</h3>
-
+        
         <div class="data-filters">
             <div id="ship-filter"></div>
             <div id="year-filter"></div>
         </div>  
-
+        
         <div class="port-info" id="port-info">
         </div>
-
+        
         
     </div>
-
+    
     <div class="filter-sidebar mobile" id="mobile-filters">
         <details open>
             <summary>Filters</summary>
-
+            
             <div class="data-filters">
                 
             </div>  
         </details>
         
     </div>
-
-    <div id="map"></div>
+    
+    <div id="map"></div> -->
     
     <script type="module" src="./map.js"></script>
 </body>
