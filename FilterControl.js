@@ -9,24 +9,24 @@ class FilterControl {
         this._data = options.data;
     }
     add(div) {
-
+        
         const categories = this._categories;
         const data = this._data;
-
+        
         this._div = div;
         this._container = document.createElement('div');
         this._container.classList = 'data-filters';
-
+        
         categories.forEach(c => {
-
-            const summary = addSummary(c);
-
+            
+            const select = addSummary(c);
+            
             let options = [];
-
+            
             if (filters[c] == undefined) {
                 filters[c] = {"status": "on", "values": []};
             }
-
+            
             data.forEach(d => {
                 if (d.properties[c]) {
                     let v = d.properties[c];
@@ -37,12 +37,7 @@ class FilterControl {
                                 if (i == '' && !options.includes('')) {
                                     options.push("Unknown");
                                 } else {
-                                    if (c == 'HEX CODE') {
-                                        options.push(i.toUpperCase());
-                                    } else {
-                                        options.push(i);
-                                    }
-        
+                                    options.push(i);
                                 }
                                 
                             } 
@@ -58,7 +53,7 @@ class FilterControl {
                                 } else {
                                     options.push(v);
                                 }
-    
+                                
                             }
                             
                         } 
@@ -66,96 +61,68 @@ class FilterControl {
                     
                     
                 }
-        
+                
             })
-
+            
             options.sort();
             
             if (options.length > 0) {
-                const details = createDetails(options);
+                const details = createDetails({select: select, items: options});
                 details.dataset.filter = c;
-                details.appendChild(summary);
-
+                
                 this._container.appendChild(details);
-
+                
             } else {
                 this._container.appendChild(summary);
             }
-
+            
             
         });
-
+        
         div.appendChild(this._container);
-
+        
         return this._container;
-
+        
     }
-
+    
     onRemove() {
         this._container.parentNode.removeChild(this._container);
         this._div = undefined;
     }
-
+    
     startingFilters() {
         return filters;
     }
-
-
+    
+    
 }
 
 function addSummary(category) {
-    const summary = document.createElement('summary');
-
-    let input = document.createElement('input');
-    input.type = 'checkbox';
-    input.classList.add('data-filter-heading');
-    input.id = `check-${category.replaceAll(' ','-')}`;
-    input.dataset.category = category;
-    input.checked = true;
-
-    summary.appendChild(input)
-
-    const span = document.createElement('span');
-    span.textContent = category;
-
-    summary.appendChild(span);
-
-    return summary;
+    
+    let select = document.createElement('wa-select');
+    select.classList.add('data-filter');
+    select.id = `select-${category.replaceAll(' ','-')}`;
+    select.dataset.filter = category;
+    select.setAttribute('label', category);
+    select.setAttribute('multiple', true);
+    select.setAttribute('clearable', true);
+    
+    return select;
 }
 
 function createDetails(options) {
-    const details = document.createElement('details');
     
-    const ul = document.createElement('ul');
-    ul.classList = 'filter-ul';
-
-    options.forEach(l => {
-        let li = document.createElement('li');
-        li.dataset.name = l;
-        
-        let input = document.createElement('input');
-        input.type = 'checkbox';
-        input.classList.add('data-filter');
-        input.id = `${l.replaceAll(' ','-')}`;
-        input.dataset.name = l;
-        input.checked = true;
-        
-        li.appendChild(input);
-
-        const label = document.createElement('label');
-        label.textContent = l;
-        label.setAttribute('for', `${l.replaceAll(' ','-')}`);
-        label.classList.add('form-label');
-
-        li.appendChild(label);
-
-        ul.appendChild(li);
-    })
-
-    details.appendChild(ul);
-
-    return details;
+    const select = options.select;
+    if (select) {
+        options.items.forEach(item => {
+            const option = document.createElement('wa-option');
+            option.value = item.replaceAll(' ','_');
+            option.textContent = item;
+            select.appendChild(option);
+        });
+    }
     
+    return select;
 }
 
 export default FilterControl;

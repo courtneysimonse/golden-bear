@@ -89,211 +89,8 @@ map.on('load', () => {
     const filters = filterEl.startingFilters();
     filterEl.add(document.getElementById('ship-filter'));
 
-    // const portFilterEl = new FilterControl({categories: ["port"], data: tripsJson.features});
-    // const portFilters = filterEl.startingFilters();
-    // portFilterEl.add(document.getElementById('port-filter'));
-
     const timeFilter = new TimeFilter('year-filter', 2000, 2024, updateMapWithYearRange);
     const years = [1931, 2024];
-
-    // map.addControl(filterEl, 'top-right');
-
-    // const tooltip = new maplibregl.Popup({closeButton: false});
-    // const popup = new maplibregl.Popup({
-    //     closeButton: true, 
-    //     closeOnClick: false, 
-    //     className: 'popup'
-    // });
-    // const detailPopup = new maplibregl.Popup({
-    //     closeOnClick: false
-    // });
-
-    // map.on('mouseenter', 'ports', (e) => {
-    //     map.getCanvas().style.cursor = 'pointer';
-    //     tooltip.setHTML(e.features[0].properties['city'])
-    //         .setLngLat(e.features[0].geometry.coordinates)
-    //         .addTo(map);
-    // });
-
-    // map.on('mouseleave', 'ports', () => {
-    //     map.getCanvas().style.cursor = '';
-    //     tooltip.remove();
-    // })
-
-    // map.on('mousemove', (e) => {
-    //     const width = 10;
-    //     const height = 10;
-    //     const features = map.queryRenderedFeatures([
-    //         [e.point.x - width / 2, e.point.y - height / 2],
-    //         [e.point.x + width / 2, e.point.y + height / 2]
-    //       ], { layers: ['trips'] });
-
-    //     if (features.length > 0) {
-    //         map.getCanvas().style.cursor = 'pointer';
-    //         let popupHtml = '';
-    //         let selectedFeatures = [];
-    //         let selectedArrivals = [];
-    //         let selectedDepartures = [];
-    //         let previousFrom = '';
-    //         let previousTo = '';
-    //         // popupHtml += `<h4>${features[0].properties['from']} to ${features[0].properties['to']}</h4>`
-    //         features.forEach(({ properties }) => {
-    //             const { from, to, year, departure, arrival } = properties;
-                
-    //             // Add heading for new "from" to "to" changes
-    //             if (from !== previousFrom || to !== previousTo) {
-    //                 popupHtml += `<h4>${from} to ${to}</h4>`;
-    //                 previousFrom = from;  // Update previous "from"
-    //                 previousTo = to;
-    //             }
-    
-    //             // Add year and trip details to the popup
-    //             popupHtml += `<p>${year}: ${arrival} to ${departure}</p>`;
-    //             selectedFeatures.push(year);
-    //             selectedArrivals.push(arrival);
-    //             selectedDepartures.push(departure);
-    //         });
-
-    //         if (!popup.isOpen() && !detailPopup.isOpen()) {
-    //             tooltip.setHTML(popupHtml)
-    //             .setLngLat(e.lngLat)
-    //             .addTo(map);
-    //         }
-
-    //         map.setPaintProperty('trips', 'line-color', 
-    //             ['case',
-    //                 ['all', 
-    //                     ['in', ['get', 'arrival'], ['literal', selectedArrivals]],
-    //                     ['in', ['get', 'departure'], ['literal', selectedDepartures]],
-    //                     ['in', ['get', 'year'], ['literal', selectedFeatures]]
-    //                 ], tripHighlightColor,
-    //                 ['in', ['get', 'year'], ['literal', selectedFeatures]], tripHighlightColor2,
-    //                 tripLineColor
-    //             ])
-    //         map.setPaintProperty('trips', 'line-width', 
-    //             ['case',
-    //                 ['in', ['get', 'year'], ['literal', selectedFeatures]], 3,
-    //                 tripLineWidth
-    //             ])
-    //         map.setPaintProperty('trips', 'line-opacity', 
-    //             ['case',
-    //                 ['in', ['get', 'year'], ['literal', selectedFeatures]], 1,
-    //                 tripLineOpacity
-    //             ])
-    //     } else {
-    //         // Reset cursor if no features are found
-    //         map.getCanvas().style.cursor = '';
-    //     }
-    // })
-
-    // map.on('click', ['trips'], (e) => {
-    //     const width = 10;
-    //     const height = 10;
-    //     const features = map.queryRenderedFeatures([
-    //         [e.point.x - width / 2, e.point.y - height / 2],
-    //         [e.point.x + width / 2, e.point.y + height / 2]
-    //       ], { layers: ['trips'] });
-
-    //     if (features.length > 0) {
-    //         map.getCanvas().style.cursor = 'pointer';
-    //         let popupHtml = '';
-    //         let selectedFeatures = [];
-    //         let selectedArrivals = [];
-    //         let selectedDepartures = [];
-    //         let previousFrom = '';
-    //         let previousTo = '';
-    //         // popupHtml += `<h4>${features[0].properties['from']} to ${features[0].properties['to']}</h4>`
-    //         features.forEach(({ properties }) => {
-    //             const { from, to, year, departure, arrival } = properties;
-                
-    //             // Add heading for new "from" to "to" changes
-    //             if (from !== previousFrom || to !== previousTo) {
-    //                 popupHtml += `<h4>${from} to ${to}</h4>`;
-    //                 previousFrom = from;  // Update previous "from"
-    //                 previousTo = to;
-    //             }
-    
-    //             // Add year and trip details to the popup
-    //             popupHtml += `<p>${year}: ${arrival} to ${departure}</p>`;
-    //             selectedFeatures.push(year);
-    //             selectedArrivals.push(arrival);
-    //             selectedDepartures.push(departure);
-    //         });
-    //         popup.setHTML(popupHtml)
-    //             .setLngLat(e.lngLat)
-    //             .addTo(map);
-
-    //         map.setPaintProperty('trips', 'line-color', 
-    //             ['case',
-    //                 ['all', 
-    //                     ['in', ['get', 'arrival'], ['literal', selectedArrivals]],
-    //                     ['in', ['get', 'departure'], ['literal', selectedDepartures]],
-    //                     ['in', ['get', 'year'], ['literal', selectedFeatures]]
-    //                 ], tripHighlightColor,
-    //                 ['in', ['get', 'year'], ['literal', selectedFeatures]], tripHighlightColor2,
-    //                 tripLineColor
-    //             ])
-    //         map.setPaintProperty('trips', 'line-width', 
-    //             ['case',
-    //                 ['in', ['get', 'year'], ['literal', selectedFeatures]], 3,
-    //                 tripLineWidth
-    //             ])
-    //         map.setPaintProperty('trips', 'line-opacity', 
-    //             ['case',
-    //                 ['in', ['get', 'year'], ['literal', selectedFeatures]], 1,
-    //                 tripLineOpacity
-    //             ])
-    //     } else {
-    //         // Reset cursor if no features are found
-    //         map.getCanvas().style.cursor = '';
-    //     }
-    // })
-
-    // map.on('mouseenter', 'trips', (e) => {
-    //     map.getCanvas().style.cursor = 'pointer';
-    //     let popupHtml = '';
-    //     e.features.forEach(feature => popupHtml += feature.properties['year'] + ', ')
-    //     popup.setHTML(popupHtml)
-    //         .setLngLat(e.lngLat)
-    //         .addTo(map);
-    // });
-
-    // map.on('mouseleave', 'trips', () => {
-    //     map.getCanvas().style.cursor = '';
-    // });
-
-
-    // map.on('click', 'ports', (e) => {
-    //     let popupHtml = '';
-    //     const city = e.features[0].properties['city'];
-    //     const frequency = e.features[0].properties['count'];
-
-    //     popupHtml = `<h3>${city}</h3>
-    //         <p>Number of Visits: ${frequency}</p>`;
-
-    //     let lng = e.lngLat.lng;
-    //     if (lng < -180) {
-    //         lng = lng + 180;
-    //     } else if (lng > 180) {
-    //         lng = lng - 180;
-    //     }
-
-        // fetch(`/.netlify/functions/weather?lat=${e.lngLat.lat}&lng=${lng}`)
-        //     .then((data) => {
-        //         data.json()
-        //             .then((json) => {
-        //                 console.log(json);
-        //                 popupHtml += `<p>Temp: ${json.main.temp}&deg;F</p>`
-        //                 popupHtml += `<p>Weather: ${json.weather[0].description}</p>`
-                    
-        //                 detailPopup.setHTML(popupHtml)
-        //                 .setLngLat(e.lngLat)
-        //                 .addTo(map);
-        //             })
-        //     })
-
-
-    // })
 
     const popup = new maplibregl.Popup({
         closeButton: false,
@@ -480,53 +277,20 @@ map.on('load', () => {
     });
     
     
+    const filterSelects = document.querySelectorAll('.data-filter');
+    [...filterSelects].forEach(el => {
+        el.addEventListener('wa-change', (e) => {
 
-    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-    [...checkboxes].forEach(check => {
-        check.addEventListener('change', (e) => {
+            let cat = e.target.dataset.filter;
+            let value = Array.isArray(e.target.value) ? e.target.value.map(v => v.replaceAll('_', ' ')) : [];
 
-            if (e.target.className == 'data-filter') {
-                let cat = e.target.parentNode.parentNode.parentNode.dataset.filter;
-                let item = e.target.nextSibling.textContent;
-
-                if (e.target.checked == false) {
-                    filters[cat].values = filters[cat].values.filter(x => x != item);
-
-                    if (item == "Unknown") {
-                        filters[cat].values = filters[cat].values.filter(x => x != '');
-                    }
-                } else if (!filters[cat].values.includes(item)) {
-                    filters[cat].values.push(item);
-                    if (item == "Unknown") {
-                        filters[cat].values.push('');
-                    }
-                } 
+            if (value.length > 0) {
+                filters[cat].status = "on";
+                filters[cat].values = [...value];
                 
-            } else if (e.target.dataset.category) {
-                
-                let category = e.target.dataset.category;
-
-                if (e.target.checked == false) {
-                    filters[category].status = "off";
-                } else {
-                    filters[category].status = "on"
-                    const listInputs = document.querySelectorAll('.data-filter');
-                    listInputs.forEach(input => {
-
-                        let item = input.nextSibling.textContent;
-                        if (input.parentNode.parentNode.parentNode.dataset.filter == category && input.checked) {
-
-                            filters[category].values.push(item);
-                            if (item == "Unknown") {
-                                filters[category].values.push('');
-                            }
-
-                        }
-                    });
-                }
-
-                
-            }
+            } else {
+                filters[cat].status = "off";
+            }         
 
             updateMarkers();
 
