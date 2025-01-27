@@ -19,7 +19,26 @@ class TimeFilter {
         // Create a label to display the selected range of years
         const yearLabel = document.createElement('div');
         yearLabel.classList.add('year-label');
-        yearLabel.innerText = `Years: ${this.startYear.toFormat('yyyy')} - ${this.endYear.toFormat('yyyy')}`;
+
+        const startYearInput = document.createElement('wa-input');
+        startYearInput.id = 'start-year';
+        startYearInput.type = 'number';
+        startYearInput.min = this.startYear.toFormat('yyyy');
+        startYearInput.max = this.endYear.toFormat('yyyy');
+        startYearInput.label = 'Start Year';
+        startYearInput.placeholder = this.startYear.toFormat('yyyy');
+
+        const endYearInput = document.createElement('wa-input');
+        endYearInput.id = 'end-year';
+        endYearInput.type = 'number';
+        endYearInput.min = this.startYear.toFormat('yyyy');
+        endYearInput.max = this.endYear.toFormat('yyyy');
+        endYearInput.label = 'End Year';
+        endYearInput.placeholder = this.endYear.toFormat('yyyy'); 
+
+        yearLabel.appendChild(startYearInput);
+        yearLabel.appendChild(document.createTextNode(' to '));
+        yearLabel.appendChild(endYearInput);
 
         // Create a div to hold the noUiSlider
         const sliderDiv = document.createElement('div');
@@ -50,20 +69,32 @@ class TimeFilter {
         // Handle slider updates for the range
         sliderDiv.noUiSlider.on('update', (values) => {
             this.selectedYears = values.map(v => Math.round(v));
-            yearLabel.innerText = `Years: ${this.selectedYears[0]} - ${this.selectedYears[1]}`;
+            startYearInput.value = this.selectedYears[0];
+            endYearInput.value = this.selectedYears[1];
         });
 
         // Handle slider updates for the range
         sliderDiv.noUiSlider.on('set', (values) => {
             this.selectedYears = values.map(v => Math.round(v));
-            yearLabel.innerText = `Years: ${this.selectedYears[0]} - ${this.selectedYears[1]}`;
+            startYearInput.value = this.selectedYears[0];
+            endYearInput.value = this.selectedYears[1];
             this.onYearChange(this.selectedYears);
+        });
+
+        // Handle input changes
+        startYearInput.addEventListener('wa-change', (e) => {
+            sliderDiv.noUiSlider.set([e.target.value, null]);
+        });
+
+        endYearInput.addEventListener('wa-change', (e) => {
+            sliderDiv.noUiSlider.set([null, e.target.value]);
         });
 
         // Append elements to the container
         this.container.innerHTML = ''; // Clear any previous content
         this.container.appendChild(yearLabel);
         this.container.appendChild(sliderDiv);
+
     }
 }
 

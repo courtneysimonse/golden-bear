@@ -32,6 +32,11 @@ map.addControl(new maplibregl.NavigationControl());
 
 map.on('load', () => {
 
+    const portInfoEl = document.getElementById('port-info');
+    if (window.screen.width < 920) {
+        portInfoEl.setAttribute('placement', 'bottom');
+    }
+
     const tripLineColor = '#D99C52';
     const tripLineWidth = 1.5;
     const tripLineOpacity = 0.2;
@@ -208,12 +213,18 @@ map.on('load', () => {
             const tripFeature = e.features.find((feature) => feature.layer.id === "trips");
     
             let popupHtml = "";
+            let portInfoHtml = "";
     
             if (portFeature) {
                 const { city, count, wikidataId } = portFeature.properties;
                 popupHtml = `
-                    <h4>${city}</h4>
-                    <p>Number of visits: ${count}</p>
+                    <h4 class="wa-heading-xs">${city}</h4>
+                    <p class="wa-body-s">Number of visits: ${count}</p>
+                `;
+
+                portInfoHtml = `
+                    <h4 class="wa-heading-m">${city}</h4>
+                    <p class="wa-body-m">Number of visits: ${count}</p>
                 `;
 
                 // Fetch weather data
@@ -230,12 +241,17 @@ map.on('load', () => {
                     const weatherResponse = await fetch(`/.netlify/functions/weather?lat=${lat}&lng=${lng}`);
                     const weatherJson = await weatherResponse.json();
                     popupHtml += `
-                        <p>Temp: ${weatherJson.main.temp}&deg;F</p>
-                        <p>Weather: ${weatherJson.weather[0].description}</p>
+                        <p class="wa-body-s">Temp: ${weatherJson.main.temp}&deg;F</p>
+                        <p class="wa-body-s">Weather: ${weatherJson.weather[0].description}</p>
+                    `;
+
+                    portInfoHtml += `
+                        <p class="wa-body-m">Temp: ${weatherJson.main.temp}&deg;F</p>
+                        <p class="wa-body-m">Weather: ${weatherJson.weather[0].description}</p>
                     `;
                 } catch (error) {
                     console.error("Error fetching weather data:", error);
-                    popupHtml += `<p>Weather data unavailable</p>`;
+                    popupHtml += `<p class="wa-body-s">Weather data unavailable</p>`;
                 } finally {
                     activePopup
                         .setHTML(popupHtml)
@@ -245,7 +261,9 @@ map.on('load', () => {
 
                 // Add data to sidebar
                 if (wikidataId) {
-                    await fetchWikipediaFromWikidata(wikidataId);
+                    const wikidataHtml = await fetchWikipediaFromWikidata(wikidataId);
+                    document.getElementById("port-info").innerHTML = portInfoHtml + wikidataHtml;
+                    portInfoEl.open = true;
                 }
 
 
@@ -372,6 +390,8 @@ function getTagsFilter(tags, prop){
 
 async function fetchWikipediaFromWikidata(wikidataId) {
     let wikidataHtml = '';
+    let mainImageUrl = '';
+    let label = '';
 
     try {
         const wikidataQuery = `
@@ -389,11 +409,12 @@ async function fetchWikipediaFromWikidata(wikidataId) {
 
         const result = wikidataJson.results.bindings[0];
         if (result) {
-            const label = result.label?.value || "Unknown";
+            label = result.label?.value || "Unknown";
             const description = result.description?.value || "No description available";
             const imageUrl = result.image?.value;
 
             if (imageUrl) {
+                mainImageUrl = imageUrl;
                 wikidataHtml += `
                     <img src="${imageUrl}" alt="${label}" style="max-width: 100%; height: auto;" />
                 `;
@@ -421,7 +442,6 @@ async function fetchWikipediaFromWikidata(wikidataId) {
         const entity = data.entities[wikidataId];
         if (entity && entity.sitelinks && entity.sitelinks.enwiki) {
             const wikipediaTitle = entity.sitelinks.enwiki.title;
-            const wikipediaUrl = entity.sitelinks.enwiki.url;
 
             // Fetch Wikipedia summary
             const wikipediaResponse = await fetch(
@@ -432,27 +452,36 @@ async function fetchWikipediaFromWikidata(wikidataId) {
                 const description = wikipediaJson.description || "";
                 const extract = wikipediaJson.extract || "";
 
+                wikidataHtml = '';
+
+                if (mainImageUrl !== '') {
+                    wikidataHtml += `
+                        <img src="${mainImageUrl}" alt="${label}" style="max-width: 100%; height: auto;" />
+                    `
+                }
+
+                wikidataHtml += `
+                    <h2 class="wa-heading-s"><a href="https://en.wikipedia.org/wiki/${encodeURIComponent(wikipediaTitle)}" target="_blank">${wikipediaTitle}</a></h4>
+                    <p class="wa-body-s">${description}</p>
+                    <p class="wa-body-s">${extract}</p>
+                `;
+
                 if (wikipediaJson.thumbnail && wikipediaJson.thumbnail.source) {
                     wikidataHtml += `
                         <img src="${wikipediaJson.thumbnail.source}" alt="${wikipediaTitle}" style="max-width: 100%; height: auto;" />
                     `;
                 }
-
-                wikidataHtml += `
-                    <h4><a href="https://en.wikipedia.org/wiki/${encodeURIComponent(wikipediaTitle)}" target="_blank">${wikipediaTitle}</a></h4>
-                    <p>${description}</p>
-                    <p>${extract}</p>
-                `;
             } else {
-                wikidataHtml += `<p>Wikipedia information unavailable</p>`;
+                wikidataHtml += `<p class="wa-body-s">Wikipedia information unavailable</p>`;
             }
         } else {
-            wikidataHtml += `<p>Linked Wikipedia article not found</p>`;
+            wikidataHtml += `<p class="wa-body-s">Linked Wikipedia article not found</p>`;
         }
     } catch (error) {
         console.error("Error fetching Wikipedia information:", error);
-        wikidataHtml += `<p>Information unavailable</p>`;
+        wikidataHtml += `<p class="wa-body-s">Information unavailable</p>`;
     } finally {
-        document.getElementById("port-info").innerHTML = wikidataHtml;
+        return wikidataHtml;
+
     }
 }

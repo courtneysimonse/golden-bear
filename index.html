@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Golden Bear Voyages</title>
     
     <link rel="stylesheet" href="https://early.webawesome.com/webawesome@3.0.0-alpha.9/dist/styles/themes/mellow.css" />
@@ -38,37 +39,17 @@
         </nav>
         
         
-        <main class="wa-body-l">
+        <main>
             <div id="map"></div>
         </main>
 
-        <aside slot="aside" class="wa-desktop-only hidden">
-            <div class="port-info" id="port-info">
-            </div>
-        </aside>
+        <wa-drawer label="Port Information" with-header placement="end" id="port-info">
+            
+        </wa-drawer>
         
     </wa-page>
     
-    
-    <script>
-        const sectionAnchors = document.querySelectorAll("[slot*='navigation'] a[href*='#']");
-        sectionAnchors.forEach((sectionAnchor) => sectionAnchor.setAttribute("data-drawer", "close"));
-    </script>
-    
-    <!-- <div class="filter-sidebar large-screen">
-        
-        <h3>Filters</h3>
-        
-        <div class="data-filters">
-            <div id="ship-filter"></div>
-            <div id="year-filter"></div>
-        </div>  
-        
-        <div class="port-info" id="port-info">
-        </div>
-        
-        
-    </div>
+    <!-- 
     
     <div class="filter-sidebar mobile" id="mobile-filters">
         <details open>

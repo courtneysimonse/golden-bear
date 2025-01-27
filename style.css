@@ -2,21 +2,19 @@
 
 wa-page {
     --menu-width: 15rem;
-    --aside-width: 15rem;
-}
-wa-page[view='desktop'] {
-    [slot*='navigation'] {
-        border-inline-end: var(--wa-border-width-s) var(--wa-border-style) var(--wa-color-surface-border);
-    }
+    /* --aside-width: 15rem; */
 }
 
 wa-page[view='mobile'] {
+    --menu-width: auto;
     --aside-width: auto;
-  
-     [slot='aside'] {
-      display: none;
-    }
-  }
+}
+
+/* Utilities */
+wa-page[view='mobile'] .wa-desktop-only,
+wa-page[view='desktop'] .wa-mobile-only {
+  display: none !important;
+}
   
 
 [slot='header'] {
@@ -29,12 +27,16 @@ wa-page[view='mobile'] {
 
 [slot='navigation-header'] {
     border-block-end: var(--wa-border-width-s) var(--wa-border-style) var(--wa-color-surface-border);
-    padding: 0;
+    padding: 0 0 0 1rem;
 }
 
 [slot*='navigation'] a {
     --wa-color-text-link: var(--wa-color-text-normal);
     padding: 0;
+}
+
+[slot*='aside'] a, #port-info a {
+    color: var(--wa-color-text-normal);
 }
 
 main {
@@ -49,6 +51,15 @@ body {
     height: 100%;
     padding: 0;
     margin: 0;
+    color: var(--wa-color-text-normal);
+}
+
+:not(:defined) {
+    visibility: hidden;
+}
+ 
+#port-info * {
+    color: var(--wa-color-text-normal);
 }
 
 #map {
@@ -63,14 +74,14 @@ body {
 .maplibregl-popup-content {
     pointer-events: none;
     padding: 0.5rem;
-    background-color: #f5f4f2;
-    color: #200005;
-    font-family: "Modern Antiqua", serif;
+    background-color: var(--wa-color-surface-raised);
+    color: var(--wa-color-text-normal);
+    font-family: var(--wa-font-family-body);
     max-height: 150px;
     overflow: scroll;
-    border: 1px solid #200005;
+    /* border: 1px solid #200005; */
     border-radius: 5px;
-    box-shadow: 1px 1px 2px #200005;
+    /* box-shadow: 1px 1px 2px #200005; */
 }
 
 .maplibregl-popup-content h4 {
