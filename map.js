@@ -3,6 +3,7 @@ import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7/+esm';
 import * as turf from 'https://cdn.jsdelivr.net/npm/@turf/turf@7.0.0/+esm';
 import FilterControl from "./FilterControl.js";
 import TimeFilter from './TimeFilter.js';
+import LayerControl from './LayerControl.js';
 
 const tripsJson = await d3.json('./data/tripSegments.geojson');
 
@@ -96,6 +97,9 @@ map.on('load', () => {
 
     const timeFilter = new TimeFilter('year-filter', 2000, 2024, updateMapWithYearRange);
     const years = [1931, 2024];
+
+    const layerEl = new LayerControl({map: map, layers: ['trips', 'ports']});
+    layerEl.add(document.getElementById('layer-list'));
 
     const popup = new maplibregl.Popup({
         closeButton: false,
