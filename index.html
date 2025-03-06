@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Golden Bear Voyages</title>
     
-    <link rel="stylesheet" href="https://early.webawesome.com/webawesome@3.0.0-alpha.9/dist/styles/themes/mellow.css" />
-    <script type="module" src="https://early.webawesome.com/webawesome@3.0.0-alpha.9/dist/webawesome.loader.js"></script>
+    <link rel="stylesheet" href="https://early.webawesome.com/webawesome@3.0.0-alpha.11/dist/styles/themes/mellow.css" />
+    <link rel="stylesheet" href="https://early.webawesome.com/webawesome@3.0.0-alpha.11/dist/styles/webawesome.css" />
+    <script type="module" src="https://early.webawesome.com/webawesome@3.0.0-alpha.11/dist/webawesome.loader.js"></script>
     
     <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.css">
     
@@ -31,10 +32,18 @@
         </nav>
         <nav slot="navigation">
 
-            <div class="data-filters">
+            <wa-details summary="Layers" class="custom-icons">
+                <wa-icon name="square-plus" slot="expand-icon" variant="regular"></wa-icon>
+                <wa-icon name="square-minus" slot="collapse-icon" variant="regular"></wa-icon>
+                <div class="layer-list"></div>
+            </wa-details>
+
+            <wa-details summary="Data Filters" class="custom-icons">
+                <wa-icon name="square-plus" slot="expand-icon" variant="regular"></wa-icon>
+                <wa-icon name="square-minus" slot="collapse-icon" variant="regular"></wa-icon>
                 <div id="ship-filter"></div>
                 <div id="year-filter"></div>
-            </div>  
+            </wa-details>
             
         </nav>
         

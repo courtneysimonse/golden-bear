@@ -159,3 +159,12 @@ body {
 .noUi-value-horizontal {
     padding-top: 6px;
 }
+
+wa-details.custom-icons::part(icon) {
+    rotate: none;
+}
+
+wa-details {
+    --spacing: 0;
+    border: none;
+}
