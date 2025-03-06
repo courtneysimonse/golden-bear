@@ -150,6 +150,7 @@ map.on('load', () => {
                 let selectedFeatures = [];
                 let selectedArrivals = [];
                 let selectedDepartures = [];
+                let selectedIntervals = [];
                 let previousFrom = '';
                 let previousTo = '';
 
@@ -166,11 +167,17 @@ map.on('load', () => {
                         previousTo = to;
                     }
 
+                    const departureDate = luxon.DateTime.fromFormat(departure, "MM/dd/yy");
+                    const arrivalDate = luxon.DateTime.fromFormat(arrival, "MM/dd/yy");
+                    const duration = departureDate.diff(arrivalDate, ['days']).toObject().days;
+
                     // Add year and trip details to the popup
-                    popupHtml += `<p>${year}: ${arrival} to ${departure}</p>`;
+                    popupHtml += `<p>${year}: ${arrival} to ${departure} - ${duration} days</p>`;
                     selectedFeatures.push(year);
                     selectedArrivals.push(arrival);
                     selectedDepartures.push(departure);
+                    
+                    selectedIntervals.push(duration);
                     
                     return popupHtml;
                 }).join('<hr>');
@@ -277,10 +284,11 @@ map.on('load', () => {
                 // Detailed popup for trips
                 const tripContent = e.features.map((feature) => {
                     const { from, to, year, arrival, departure } = feature.properties;
+                    const duration = luxon.DateTime.fromFormat(departure, "MM/dd/yy").diff(luxon.DateTime.fromFormat(arrival, "MM/dd/yy"), ['days']).toObject().days;
                     return `
                         <div>
                             <h4>${from} → ${to}</h4>
-                            <p>${year}: ${arrival} to ${departure}</p>
+                            <p>${year}: ${arrival} to ${departure} - ${duration}</p>
                         </div>
                     `;
                 }).join('<hr>');
