@@ -40,8 +40,8 @@ map.on('load', () => {
     }
 
     const tripLineColor = '#D99C52';
-    const tripLineWidth = 1.5;
-    const tripLineOpacity = 0.2;
+    const tripLineWidth = 2.5;
+    const tripLineOpacity = 0.5;
     const tripHighlightColor = '#592202';
     const tripHighlightColor2 = '#D97E6A';
 
@@ -123,8 +123,8 @@ map.on('load', () => {
     
 
     map.on('mousemove', ['ports', 'trips'], (e) => {
-        const width = 10;
-        const height = 10;
+        const width = 20;
+        const height = 20;
         const features = map.queryRenderedFeatures([
             [e.point.x - width / 2, e.point.y - height / 2],
             [e.point.x + width / 2, e.point.y + height / 2]
