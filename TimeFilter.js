@@ -82,11 +82,11 @@ class TimeFilter {
         });
 
         // Handle input changes
-        startYearInput.addEventListener('wa-change', (e) => {
+        startYearInput.addEventListener('change', (e) => {
             sliderDiv.noUiSlider.set([e.target.value, null]);
         });
 
-        endYearInput.addEventListener('wa-change', (e) => {
+        endYearInput.addEventListener('change', (e) => {
             sliderDiv.noUiSlider.set([null, e.target.value]);
         });
 

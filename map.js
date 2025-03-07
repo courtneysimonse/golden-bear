@@ -1,6 +1,7 @@
 import 'https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.js';
 import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7/+esm';
 import * as turf from 'https://cdn.jsdelivr.net/npm/@turf/turf@7.0.0/+esm';
+import { DateTime } from 'https://cdn.jsdelivr.net/npm/luxon@3.5.0/+esm';
 import FilterControl from "./FilterControl.js";
 import TimeFilter from './TimeFilter.js';
 import LayerControl from './LayerControl.js';
@@ -167,8 +168,8 @@ map.on('load', () => {
                         previousTo = to;
                     }
 
-                    const departureDate = luxon.DateTime.fromFormat(departure, "MM/dd/yy");
-                    const arrivalDate = luxon.DateTime.fromFormat(arrival, "MM/dd/yy");
+                    const departureDate = DateTime.fromFormat(departure, "MM/dd/yy");
+                    const arrivalDate = DateTime.fromFormat(arrival, "MM/dd/yy");
                     const duration = departureDate.diff(arrivalDate, ['days']).toObject().days;
 
                     // Add year and trip details to the popup
@@ -284,7 +285,7 @@ map.on('load', () => {
                 // Detailed popup for trips
                 const tripContent = e.features.map((feature) => {
                     const { from, to, year, arrival, departure } = feature.properties;
-                    const duration = luxon.DateTime.fromFormat(departure, "MM/dd/yy").diff(luxon.DateTime.fromFormat(arrival, "MM/dd/yy"), ['days']).toObject().days;
+                    const duration = DateTime.fromFormat(departure, "MM/dd/yy").diff(DateTime.fromFormat(arrival, "MM/dd/yy"), ['days']).toObject().days;
                     return `
                         <div>
                             <h4>${from} → ${to}</h4>
@@ -309,7 +310,7 @@ map.on('load', () => {
     
     const filterSelects = document.querySelectorAll('.data-filter');
     [...filterSelects].forEach(el => {
-        el.addEventListener('wa-change', (e) => {
+        el.addEventListener('change', (e) => {
 
             let cat = e.target.dataset.filter;
             let value = Array.isArray(e.target.value) ? e.target.value.map(v => v.replaceAll('_', ' ')) : [];
