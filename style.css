@@ -168,3 +168,15 @@ wa-details {
     --spacing: 0;
     border: none;
 }
+
+hr {
+    margin: var(--wa-space-xs) 0;
+}
+
+#port-info h4 {
+    margin: var(--wa-space-xs) 0;
+}
+
+.maplibregl-popup-content h3 {
+    margin: var(--wa-space-xs) 0;
+}

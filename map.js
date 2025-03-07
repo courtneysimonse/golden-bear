@@ -141,7 +141,7 @@ map.on('load', () => {
                 const { city, count } = portFeature.properties;
                 popup
                     .setLngLat(e.lngLat)
-                    .setHTML(`<h3>${city}</h3><p>Visits: ${count}</p>`)
+                    .setHTML(`<h3 class="wa-heading-s">${city}</h3><p>Visits: ${count}</p>`)
                     .addTo(map);
 
                 map.setPaintProperty('ports', 'circle-color', 
@@ -163,7 +163,7 @@ map.on('load', () => {
 
                     // Add heading for new "from" to "to" changes
                     if (from !== previousFrom || to !== previousTo) {
-                        popupHtml += `<h4>${from} to ${to}</h4>`;
+                        popupHtml += `<p><strong>${from} to ${to}</strong></p>`;
                         previousFrom = from;  // Update previous "from"
                         previousTo = to;
                     }
