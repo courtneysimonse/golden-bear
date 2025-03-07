@@ -172,7 +172,7 @@ map.on('load', () => {
                     const duration = departureDate.diff(arrivalDate, ['days']).toObject().days;
 
                     // Add year and trip details to the popup
-                    popupHtml += `<p>${year}: ${arrival} to ${departure} - ${duration} days</p>`;
+                    popupHtml += `<p>${year}: ${arrival.slice(0,5)} to ${departure.slice(0,5)} - ${duration} days</p>`;
                     selectedFeatures.push(year);
                     selectedArrivals.push(arrival);
                     selectedDepartures.push(departure);
@@ -288,7 +288,7 @@ map.on('load', () => {
                     return `
                         <div>
                             <h4>${from} → ${to}</h4>
-                            <p>${year}: ${arrival} to ${departure} - ${duration}</p>
+                            <p>${year}: ${arrival.slice(0,5)} to ${departure.slice(0,5)} - ${duration}</p>
                         </div>
                     `;
                 }).join('<hr>');
