@@ -21,8 +21,7 @@
         <header slot="header" class="wa-split">
 
             <div class="wa-cluster wa-gap-xs">
-                <wa-button size="small" variant="brand" appearance="outlined">About the Map</wa-button>
-                <wa-button size="small" variant="brand">Contact Us</wa-button>
+                <wa-button size="small" variant="brand" appearance="outlined" id="about-button">About the Map</wa-button>
             </div>
         </header>
         
@@ -55,6 +54,31 @@
         <wa-drawer label="Port Information" with-header placement="end" id="port-info">
             
         </wa-drawer>
+
+        <wa-dialog label="About the Map" with-header with-footer id="about-dialog">
+            <p>This project began about three years ago, sparked by my curiosity about how often the training ship visits Australia—and what goes into planning those port calls. Despite searching across official school websites, I couldn&apos;t find much information, let alone any visualizations. As a visual thinker, I was surprised there wasn&apos;t already a map showing this kind of data. Sure, there were some records from the past few years, but they were limited and scattered.</p>
+
+            <p>I decided it was time to change that.</p>
+            
+            <p>With the help of a friend studying GIS, I discovered <a href="https://artemismaps.com">ArtemisMAPs</a> and decided to fund a small project to bring this idea to life. What you see here is the result. I hope it helps shed light on these voyages in a way that&apos;s both accessible and engaging.</p>
+            
+            <p>I'd love to hear what you think!</p>
+
+            <ul style="list-style: none;">
+                <li>Chris Freeman</li>
+                <li>CMA E-92 ME MET</li>
+                <li>
+                    <wa-icon name="phone" label="Call Us"></wa-icon>
+                    <a href="tel:619-972-5673">619-972-5673</a>
+                </li>
+                <li>
+                    <wa-icon name="envelope" label="Email"></wa-icon>
+                    <a href="mailto:SDChrisFreeman@gmail.com?subject=Map%20Question">SDChrisFreeman@gmail.com</a>
+                </li>
+            </ul>
+
+            <wa-button slot="footer" variant="brand" data-dialog="close">Close</wa-button>
+        </wa-dialog>
         
     </wa-page>
     

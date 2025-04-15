@@ -6,6 +6,11 @@ import FilterControl from "./FilterControl.js";
 import TimeFilter from './TimeFilter.js';
 import LayerControl from './LayerControl.js';
 
+// setup information dialog
+const aboutDialog = document.getElementById('about-dialog');
+const aboutButton = document.getElementById('about-button');
+aboutButton.addEventListener('click', () => aboutDialog.open = true);
+
 const tripsJson = await d3.json('./data/tripSegments.geojson');
 
 const portsFeatures = await d3.csv('https://docs.google.com/spreadsheets/d/1n-2Kw8lt628JVir1urXYlBJ8wKA38A_jrL5reco9xBU/gviz/tq?tqx=out:csv&sheet=Ports%20Geocoded', (d) => {
