@@ -1,4 +1,4 @@
-import 'https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.js';
+import * as maplibregl from 'https://unpkg.com/maplibre-gl@^6.11.1/dist/maplibre-gl.mjs';
 import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7/+esm';
 import * as turf from 'https://cdn.jsdelivr.net/npm/@turf/turf@7.0.0/+esm';
 import { DateTime } from 'https://cdn.jsdelivr.net/npm/luxon@3.5.0/+esm';
